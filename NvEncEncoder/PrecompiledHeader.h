@@ -5,6 +5,12 @@
 #include <d3d11_2.h>
 #include "External\nvEncodeAPI.h"
 
+#undef min
+#undef max
+
+#include <memory>
+#include <string>
+
 #if _DEBUG
 #define Assert(x) do { if (!(x)) { if (IsDebuggerPresent()) { __debugbreak(); } } } while (false)
 #else
