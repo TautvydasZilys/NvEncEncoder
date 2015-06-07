@@ -68,23 +68,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -160,6 +160,7 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="External\nvEncodeAPI.h" />
     <ClInclude Include="PrecompiledHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

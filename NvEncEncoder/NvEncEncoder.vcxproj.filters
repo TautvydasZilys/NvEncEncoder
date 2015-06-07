@@ -6,5 +6,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrecompiledHeader.h" />
+    <ClInclude Include="External\nvEncodeAPI.h">
+      <Filter>External</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="External">
+      <UniqueIdentifier>{eb14997a-34bf-4907-be8d-d03bc01de4c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
