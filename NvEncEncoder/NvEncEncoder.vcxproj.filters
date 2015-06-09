@@ -23,6 +23,9 @@
     <ClCompile Include="Core\NEE_Api.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\PreviewWindow.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrecompiledHeader.h" />
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="Include\NEE_Api.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\PreviewWindow.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

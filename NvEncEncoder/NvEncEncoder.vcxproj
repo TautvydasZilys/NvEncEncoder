@@ -164,6 +164,7 @@
     <ClCompile Include="Core\Initializer.cpp" />
     <ClCompile Include="Core\NEE_Api.cpp" />
     <ClCompile Include="Core\NvEncode.cpp" />
+    <ClCompile Include="Core\PreviewWindow.cpp" />
     <ClCompile Include="PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -178,6 +179,7 @@
     <ClInclude Include="Core\NEE_Encoder.h" />
     <ClInclude Include="Core\Initializer.h" />
     <ClInclude Include="Core\NvEncode.h" />
+    <ClInclude Include="Core\PreviewWindow.h" />
     <ClInclude Include="External\nvEncodeAPI.h" />
     <ClInclude Include="Include\NEE_Api.h" />
     <ClInclude Include="PrecompiledHeader.h" />

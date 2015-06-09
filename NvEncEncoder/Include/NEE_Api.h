@@ -8,8 +8,5 @@
 
 class NEE_Encoder;
 
-NEE_API bool NEE_Initialize();
-NEE_API bool NEE_Uninitialize();
-
 NEE_API NEE_Encoder* NEE_CreateEncoder();
 NEE_API void NEE_DestroyEncoder(NEE_Encoder* encoder);
