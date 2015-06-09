@@ -67,6 +67,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{103acabf-ba73-45b0-b920-3291c1ec3993}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e1e17a2c-9124-4d75-9868-4fa466148f1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Utilities\Encoding.inl">
@@ -75,5 +78,13 @@
     <None Include="Utilities\Logging.inl">
       <Filter>Utilities</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\PreviewWindowPixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PreviewWindowVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

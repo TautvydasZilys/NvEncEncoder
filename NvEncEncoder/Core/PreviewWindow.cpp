@@ -1,6 +1,8 @@
 #include "PrecompiledHeader.h"
 #include "D3D11Context.h"
 #include "PreviewWindow.h"
+#include "Shaders\PreviewWindowPixelShader.h"
+#include "Shaders\PreviewWindowVertexShader.h"
 #include "Utilities\CriticalSection.h"
 
 Utilities::CriticalSection g_HwndMapCriticalSection;
@@ -39,7 +41,6 @@ ATOM PreviewWindow::CreateWindowClass()
 
 			if (msg == WM_CREATE)
 			{
-				Utilities::CriticalSection::Lock lock(g_HwndMapCriticalSection);
 				auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
 				window = static_cast<PreviewWindow*>(createStruct->lpCreateParams);
 				g_HwndMap.insert(std::make_pair(hwnd, window));
@@ -105,11 +106,21 @@ static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, IDXGISw
 	Assert(SUCCEEDED(hr));
 }
 
+static inline void CreateShaders(ID3D11Device* d3d11Device, ID3D11VertexShader** vertexShader, ID3D11PixelShader** pixelShader)
+{
+	auto hr = d3d11Device->CreateVertexShader(g_PreviewWindowVertexShader, sizeof(g_PreviewWindowVertexShader), nullptr, vertexShader);
+	Assert(SUCCEEDED(hr));
+
+	hr = d3d11Device->CreatePixelShader(g_PreviewWindowPixelShader, sizeof(g_PreviewWindowPixelShader), nullptr, pixelShader);
+	Assert(SUCCEEDED(hr));
+}
+
 void PreviewWindow::CreateD3D11Resources(HWND hwnd, D3D11Context& d3d11Context)
 {	
 	auto d3d11Device = d3d11Context.GetDevice();
 
 	CreateSwapChain(hwnd, d3d11Device, m_SwapChain.ReleaseAndGetAddressOf());
+	CreateShaders(d3d11Device, m_VertexShader.ReleaseAndGetAddressOf(), m_PixelShader.ReleaseAndGetAddressOf());
 }
 
 LRESULT CALLBACK PreviewWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

@@ -7,6 +7,8 @@ class PreviewWindow
 private:
 	bool m_IsDestroyed;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader;
 
 	static ATOM CreateWindowClass();
 	HWND CreateOSWindow();
