@@ -3,9 +3,7 @@
 #include "Utilities\Logging.h"
 
 D3D11Context::D3D11Context(Utilities::Logging& logging) :
-	m_D3D11Dll(nullptr),
-	m_Device(nullptr),
-	m_DeviceContext(nullptr)
+	m_D3D11Dll(nullptr)
 {
 	m_D3D11Dll = LoadLibraryW(L"d3d11.dll");
 
@@ -49,25 +47,22 @@ D3D11Context::D3D11Context(Utilities::Logging& logging) :
 		ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext);
 	Assert(SUCCEEDED(hr));
 
-	PrintDeviceInfo(logging, m_Device, featureLevel);
+	PrintDeviceInfo(logging, m_Device.Get(), featureLevel);
 }
 
 D3D11Context::~D3D11Context()
 {
-	m_DeviceContext->Release();
-	m_Device->Release();
-
 	auto result = FreeLibrary(m_D3D11Dll);
 	Assert(result != FALSE);
 }
 
 void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* device, D3D_FEATURE_LEVEL featureLevel)
 {
-	IDXGIDevice* dxgiDevice;
-	IDXGIAdapter* dxgiAdapter;
+	Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
+	Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
 	DXGI_ADAPTER_DESC dxgiAdapterDesc;
 
-	auto hr = device->QueryInterface(&dxgiDevice);
+	auto hr = device->QueryInterface(dxgiDevice.ReleaseAndGetAddressOf());
 	Assert(SUCCEEDED(hr));
 
 	hr = dxgiDevice->GetAdapter(&dxgiAdapter);
@@ -104,7 +99,4 @@ void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* de
 	logging.Log(indentation, "Dedicated system memory: ", dxgiAdapterDesc.DedicatedSystemMemory / 1024 / 1024, " MB.");
 	logging.Log(indentation, "Shared system memory: ", dxgiAdapterDesc.SharedSystemMemory / 1024 / 1024, " MB.");
 	logging.Log(indentation, "Direct3D feature level: ", featureLevelString, ".");
-
-	dxgiAdapter->Release();
-	dxgiDevice->Release();
 }

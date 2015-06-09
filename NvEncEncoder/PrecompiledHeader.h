@@ -3,8 +3,10 @@
 #define COMPILING_ENCODER 1
 
 #include <Windows.h>
+#include <wrl.h>
 
 #include <d3d11_2.h>
+
 #include "External\nvEncodeAPI.h"
 
 #undef min
@@ -12,6 +14,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #if _DEBUG
 #define Assert(x) do { if (!(x)) { if (IsDebuggerPresent()) { __debugbreak(); } } } while (false)

@@ -8,7 +8,7 @@ NEE_Encoder* NEE_CreateEncoder(const wchar_t* logFileName, bool forceOverwriteLo
 	{
 		return new NEE_Encoder(logFileName, forceOverwriteLogFile);
 	}
-	catch (std::runtime_error& exception)
+	catch (std::runtime_error&)
 	{
 	}
 
