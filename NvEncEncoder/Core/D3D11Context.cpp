@@ -109,7 +109,7 @@ void D3D11Context::PrintDeviceInfo(ID3D11Device* device, D3D_FEATURE_LEVEL featu
 	Utilities::Logging::Log(indentation, "Dedicated video memory: ", dxgiAdapterDesc.DedicatedVideoMemory / 1024 / 1024, " MB.");
 	Utilities::Logging::Log(indentation, "Dedicated system memory: ", dxgiAdapterDesc.DedicatedSystemMemory / 1024 / 1024, " MB.");
 	Utilities::Logging::Log(indentation, "Shared system memory: ", dxgiAdapterDesc.SharedSystemMemory / 1024 / 1024, " MB.");
-	Utilities::Logging::Log(indentation, "Feature level: ", featureLevelString, ".");
+	Utilities::Logging::Log(indentation, "Direct3D feature level: ", featureLevelString, ".");
 
 	dxgiAdapter->Release();
 	dxgiDevice->Release();
