@@ -83,12 +83,14 @@ inline void Utilities::Logging::OutputMessage(const std::string& message)
 template<>
 inline void Utilities::Logging::OutputMessage(const wchar_t* message, void* dummy)
 {
+	(void)dummy;
 	OutputMessage(message, wcslen(message));
 }
 
 template<>
 inline void Utilities::Logging::OutputMessage(const char* message, void* dummy)
 {
+	(void)dummy;
 	OutputMessage(message, strlen(message));
 }
 

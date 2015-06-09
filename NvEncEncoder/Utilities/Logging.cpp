@@ -22,12 +22,12 @@ void Utilities::Logging::Initialize(bool forceOverwrite)
 
 		SetFilePointer(s_OutputFile, 0, NULL, FILE_END);
 
-		const char threeNewLines[] = "\r\n\r\n\r\n";
+		const char twoNewLines[] = "\r\n\r\n";
 		DWORD bytesWritten;
 
-		auto result = WriteFile(s_OutputFile, threeNewLines, sizeof(threeNewLines) - 1, &bytesWritten, nullptr);
+		auto result = WriteFile(s_OutputFile, twoNewLines, sizeof(twoNewLines) - 1, &bytesWritten, nullptr);
 		Assert(result != FALSE);
-		Assert(bytesWritten = sizeof(threeNewLines));
+		Assert(bytesWritten = sizeof(twoNewLines));
 	}
 	else
 	{
@@ -41,7 +41,7 @@ void Utilities::Logging::Initialize(bool forceOverwrite)
 
 	SetLastError(ERROR_SUCCESS);
 
-	Log("NvEnc Encoder launched.");
+	Log("NvEnc Encoder initialized.");
 }
 
 void Utilities::Logging::Shutdown()

@@ -1,5 +1,7 @@
 #pragma once
 
+#define COMPILING_ENCODER 1
+
 #include <Windows.h>
 
 #include <d3d11_2.h>

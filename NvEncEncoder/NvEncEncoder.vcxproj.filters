@@ -8,9 +8,6 @@
     <ClCompile Include="Utilities\Encoding.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Main.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\D3D11Context.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -18,6 +15,12 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\NvEncode.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\NEE_Encoder.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\NEE_Api.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,6 +47,12 @@
     <ClInclude Include="Core\NvEncode.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Core\NEE_Encoder.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\NEE_Api.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -54,6 +63,9 @@
     </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{8e18b366-0f8e-4f0e-9756-728a33c46116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{103acabf-ba73-45b0-b920-3291c1ec3993}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
