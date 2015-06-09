@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Utilities { class Logging; }
+
 class NvEncode
 {
 private:
@@ -7,10 +9,9 @@ private:
 	NV_ENCODE_API_FUNCTION_LIST m_NvEncode;
 
 public:
-	NvEncode();
+	NvEncode(Utilities::Logging& logging);
 	~NvEncode();
 
-	inline bool IsValid() const { return m_NvEncodeApiDll != nullptr; }
 	inline const NV_ENCODE_API_FUNCTION_LIST* operator->() const { return &m_NvEncode; }
 };
 

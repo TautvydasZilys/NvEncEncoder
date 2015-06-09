@@ -8,57 +8,57 @@ namespace Utilities
 	{
 	public:
 		static const int kBufferSize = 256;
-		static inline void Win32ErrorToMessageInline(int win32ErrorCode, wchar_t (&buffer)[kBufferSize]);
-		static inline void Win32ErrorToMessageInline(int win32ErrorCode, char (&buffer)[kBufferSize]);
-		static inline std::wstring Win32ErrorToMessage(int win32ErrorCode);
+		inline void Win32ErrorToMessageInline(int win32ErrorCode, wchar_t (&buffer)[kBufferSize]);
+		inline void Win32ErrorToMessageInline(int win32ErrorCode, char (&buffer)[kBufferSize]);
+		inline std::wstring Win32ErrorToMessage(int win32ErrorCode);
 
 		template <typename ...Message>
-		static inline void Log(Message&& ...message);
+		inline void Log(Message&& ...message);
 		template <typename ...Message>
-		static inline void Error(Message&& ...message);
+		inline void Error(Message&& ...message);
 		template <typename ...Message>
-		static inline void FatalError(Message&& ...message);
+		inline void FatalError(Message&& ...message);
+		
+		Logging(const wchar_t* logFileName, bool forceOverwrite);
+		~Logging();
 
-		static void Initialize(bool forceOverwrite = false);
-		static void Shutdown();
-
-		Logging() = delete;
 		Logging(const Logging&) = delete;
-		~Logging() = delete;
+		Logging& operator=(const Logging&) = delete;
 
 	private:
 		// Output* functions are NOT thread safe
 		template <size_t Length>
-		static inline void OutputMessage(const wchar_t (&message)[Length]);
-		static inline void OutputMessage(const std::wstring& message);
-		static inline void OutputMessage(const wchar_t* message, size_t length);
+		inline void OutputMessage(const wchar_t (&message)[Length]);
+		inline void OutputMessage(const std::wstring& message);
+		inline void OutputMessage(const wchar_t* message, size_t length);
 
-		static inline void OutputMessage(size_t number);
+		inline void OutputMessage(size_t number);
 
 		template <size_t Length>
-		static inline void OutputMessage(const char(&message)[Length]);
-		static inline void OutputMessage(const std::string& message);
+		inline void OutputMessage(const char(&message)[Length]);
+		inline void OutputMessage(const std::string& message);
 
 		// Some template magic to make precendence of char* overload lower than the char[n]
 		template <typename T>
-		static inline void OutputMessage(T message, void* dummy = nullptr) { static_assert(false, "Missing template specialization for OutputMessage."); }
+		inline void OutputMessage(T message, void* dummy = nullptr) { static_assert(false, "Missing template specialization for OutputMessage."); }
 		template <>
-		static inline void OutputMessage<const char*>(const char* message, void* dummy);
+		inline void OutputMessage<const char*>(const char* message, void* dummy);
 		template <>
-		static inline void OutputMessage<const wchar_t*>(const wchar_t* message, void* dummy);
+		inline void OutputMessage<const wchar_t*>(const wchar_t* message, void* dummy);
 
-		static void OutputMessage(const char* message, size_t length);
-		static void OutputCurrentTimestamp();
+		void OutputMessage(const char* message, size_t length);
+		void OutputCurrentTimestamp();
 
 		template <typename Message>
-		static inline void OutputMessages(const Message& message);
+		inline void OutputMessages(const Message& message);
 
 		template <typename FirstMessage, typename ...Message>
-		static inline void OutputMessages(const FirstMessage& message, Message&& ...messages);
+		inline void OutputMessages(const FirstMessage& message, Message&& ...messages);
 
-		static void Terminate(int errorCode = -1);
+		void Terminate(int errorCode = -1);
 
-		static CriticalSection s_LogCriticalSection;
+		HANDLE m_OutputFile;
+		CriticalSection m_LogCriticalSection;
 	};
 }
 

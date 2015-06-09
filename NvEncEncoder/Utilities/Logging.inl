@@ -97,7 +97,7 @@ inline void Utilities::Logging::OutputMessage(const char* message, void* dummy)
 template <typename ...Message>
 inline void Utilities::Logging::Log(Message&& ...message)
 {
-	CriticalSection::Lock lock(s_LogCriticalSection);
+	CriticalSection::Lock lock(m_LogCriticalSection);
 
 	OutputCurrentTimestamp();
 	OutputMessages(std::forward<Message>(message)...);

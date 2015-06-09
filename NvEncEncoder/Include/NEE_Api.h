@@ -8,5 +8,5 @@
 
 class NEE_Encoder;
 
-NEE_API NEE_Encoder* NEE_CreateEncoder();
+NEE_API NEE_Encoder* NEE_CreateEncoder(const wchar_t* logFileName, bool forceOverwriteLogFile);
 NEE_API void NEE_DestroyEncoder(NEE_Encoder* encoder);

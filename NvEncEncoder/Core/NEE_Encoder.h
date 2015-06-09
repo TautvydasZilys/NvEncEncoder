@@ -1,20 +1,24 @@
 #pragma once
 
 #include "D3D11Context.h"
-#include "Initializer.h"
 #include "NvEncode.h"
+#include "Utilities\Logging.h"
 
 class NEE_Encoder
 {
 private:
-	Initializer m_Initializer;
+	Utilities::Logging m_Logging;
 	D3D11Context m_D3D11;
 	NvEncode m_NvEncode;
 
 public:
-	inline NEE_Encoder() { }
-	inline ~NEE_Encoder() { }
+	inline NEE_Encoder(const wchar_t* logFileName, bool forceOverwriteLogFile) :
+		m_Logging(logFileName, forceOverwriteLogFile),
+		m_D3D11(m_Logging),
+		m_NvEncode(m_Logging)
+	{
+	}
 
-	inline bool IsValid() const { return m_D3D11.IsValid() && m_NvEncode.IsValid(); }
+	inline ~NEE_Encoder() { }
 };
 

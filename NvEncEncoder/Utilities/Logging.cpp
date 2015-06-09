@@ -1,31 +1,28 @@
 #include "PrecompiledHeader.h"
 #include "Logging.h"
 
-Utilities::CriticalSection Utilities::Logging::s_LogCriticalSection;
-
-static HANDLE s_OutputFile;
-static const wchar_t kLogFileName[] = L"Encoder.log";
-
-void Utilities::Logging::Initialize(bool forceOverwrite)
+Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 {
 	auto openMode = forceOverwrite ? CREATE_ALWAYS : CREATE_NEW;
 
-	s_OutputFile = CreateFileW(kLogFileName, FILE_GENERIC_WRITE, FILE_SHARE_READ, nullptr, openMode, FILE_ATTRIBUTE_NORMAL, nullptr);
-	Assert(s_OutputFile != INVALID_HANDLE_VALUE || !forceOverwrite);
+	m_OutputFile = CreateFileW(logFileName, FILE_GENERIC_WRITE, FILE_SHARE_READ, nullptr, openMode, FILE_ATTRIBUTE_NORMAL, nullptr);
+	Assert(m_OutputFile != INVALID_HANDLE_VALUE || !forceOverwrite);
 
-	if (s_OutputFile == INVALID_HANDLE_VALUE)
+	if (m_OutputFile == INVALID_HANDLE_VALUE)
 	{
 		Assert(GetLastError() == ERROR_FILE_EXISTS);
 
-		s_OutputFile = CreateFileW(kLogFileName, FILE_GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-		Assert(s_OutputFile != INVALID_HANDLE_VALUE);
+		m_OutputFile = CreateFileW(logFileName, FILE_GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		
+		if (m_OutputFile == INVALID_HANDLE_VALUE)
+			throw std::runtime_error("Failed to initialize logging.");
 
-		SetFilePointer(s_OutputFile, 0, NULL, FILE_END);
+		SetFilePointer(m_OutputFile, 0, NULL, FILE_END);
 
 		const char twoNewLines[] = "\r\n\r\n";
 		DWORD bytesWritten;
 
-		auto result = WriteFile(s_OutputFile, twoNewLines, sizeof(twoNewLines) - 1, &bytesWritten, nullptr);
+		auto result = WriteFile(m_OutputFile, twoNewLines, sizeof(twoNewLines) - 1, &bytesWritten, nullptr);
 		Assert(result != FALSE);
 		Assert(bytesWritten = sizeof(twoNewLines));
 	}
@@ -34,7 +31,7 @@ void Utilities::Logging::Initialize(bool forceOverwrite)
 		const uint8_t utf8ByteOrderMark[] = { 0xEF, 0xBB, 0xBF };
 		DWORD bytesWritten;
 
-		auto result = WriteFile(s_OutputFile, utf8ByteOrderMark, sizeof(utf8ByteOrderMark), &bytesWritten, nullptr);
+		auto result = WriteFile(m_OutputFile, utf8ByteOrderMark, sizeof(utf8ByteOrderMark), &bytesWritten, nullptr);
 		Assert(result != FALSE);
 		Assert(bytesWritten = sizeof(utf8ByteOrderMark));
 	}
@@ -44,10 +41,10 @@ void Utilities::Logging::Initialize(bool forceOverwrite)
 	Log("NvEnc Encoder initialized.");
 }
 
-void Utilities::Logging::Shutdown()
+Utilities::Logging::~Logging()
 {
 	Log("NvEnc Encoder is shutting down.");
-	CloseHandle(s_OutputFile);
+	CloseHandle(m_OutputFile);
 }
 
 void Utilities::Logging::OutputMessage(const char* message, size_t length)
@@ -57,7 +54,7 @@ void Utilities::Logging::OutputMessage(const char* message, size_t length)
 
 	DWORD bytesWritten;
 
-	auto result = WriteFile(s_OutputFile, message, static_cast<DWORD>(length), &bytesWritten, nullptr);
+	auto result = WriteFile(m_OutputFile, message, static_cast<DWORD>(length), &bytesWritten, nullptr);
 	Assert(result != FALSE);
 	Assert(bytesWritten == length);
 }
@@ -93,6 +90,6 @@ void Utilities::Logging::OutputCurrentTimestamp()
 
 void Utilities::Logging::Terminate(int errorCode)
 {
-	Logging::Shutdown();
+	delete this;
 	__fastfail(errorCode); // Just crash™ - let user know we crashed by bringing up WER dialog
 }

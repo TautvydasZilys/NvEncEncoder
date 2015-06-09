@@ -2,17 +2,17 @@
 #include "NEE_Api.h"
 #include "NEE_Encoder.h"
 
-NEE_Encoder* NEE_CreateEncoder()
+NEE_Encoder* NEE_CreateEncoder(const wchar_t* logFileName, bool forceOverwriteLogFile)
 {
-	auto encoder = new NEE_Encoder();
-
-	if (!encoder->IsValid())
+	try
 	{
-		delete encoder;
-		return nullptr;
+		return new NEE_Encoder(logFileName, forceOverwriteLogFile);
+	}
+	catch (std::runtime_error& exception)
+	{
 	}
 
-	return encoder;
+	return nullptr;
 }
 
 void NEE_DestroyEncoder(NEE_Encoder* encoder)

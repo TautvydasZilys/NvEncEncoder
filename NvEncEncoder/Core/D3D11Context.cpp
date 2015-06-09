@@ -2,7 +2,7 @@
 #include "D3D11Context.h"
 #include "Utilities\Logging.h"
 
-D3D11Context::D3D11Context() :
+D3D11Context::D3D11Context(Utilities::Logging& logging) :
 	m_D3D11Dll(nullptr),
 	m_Device(nullptr),
 	m_DeviceContext(nullptr)
@@ -11,8 +11,8 @@ D3D11Context::D3D11Context() :
 
 	if (m_D3D11Dll == nullptr)
 	{
-		Utilities::Logging::Error("ERROR: Failed to load d3d11.dll.");
-		return;
+		logging.Error("ERROR: Failed to load d3d11.dll.");
+		throw std::runtime_error("Failed to load d3d11.dll.");
 	}
 
 	typedef HRESULT(WINAPI* D3D11CreateDeviceFunc)(
@@ -49,25 +49,19 @@ D3D11Context::D3D11Context() :
 		ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext);
 	Assert(SUCCEEDED(hr));
 
-	PrintDeviceInfo(m_Device, featureLevel);
+	PrintDeviceInfo(logging, m_Device, featureLevel);
 }
 
 D3D11Context::~D3D11Context()
 {
-	if (m_D3D11Dll != nullptr)
-	{
-		Assert(m_Device != nullptr);
-		Assert(m_DeviceContext != nullptr);
+	m_DeviceContext->Release();
+	m_Device->Release();
 
-		m_DeviceContext->Release();
-		m_Device->Release();
-
-		auto result = FreeLibrary(m_D3D11Dll);
-		Assert(result != FALSE);
-	}
+	auto result = FreeLibrary(m_D3D11Dll);
+	Assert(result != FALSE);
 }
 
-void D3D11Context::PrintDeviceInfo(ID3D11Device* device, D3D_FEATURE_LEVEL featureLevel)
+void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* device, D3D_FEATURE_LEVEL featureLevel)
 {
 	IDXGIDevice* dxgiDevice;
 	IDXGIAdapter* dxgiAdapter;
@@ -104,12 +98,12 @@ void D3D11Context::PrintDeviceInfo(ID3D11Device* device, D3D_FEATURE_LEVEL featu
 	}
 
 	const auto indentation = "    ";
-	Utilities::Logging::Log("Created Direct3D 11 device.");
-	Utilities::Logging::Log(indentation, "Used GPU name: ", dxgiAdapterDesc.Description, ".");
-	Utilities::Logging::Log(indentation, "Dedicated video memory: ", dxgiAdapterDesc.DedicatedVideoMemory / 1024 / 1024, " MB.");
-	Utilities::Logging::Log(indentation, "Dedicated system memory: ", dxgiAdapterDesc.DedicatedSystemMemory / 1024 / 1024, " MB.");
-	Utilities::Logging::Log(indentation, "Shared system memory: ", dxgiAdapterDesc.SharedSystemMemory / 1024 / 1024, " MB.");
-	Utilities::Logging::Log(indentation, "Direct3D feature level: ", featureLevelString, ".");
+	logging.Log("Created Direct3D 11 device.");
+	logging.Log(indentation, "Used GPU name: ", dxgiAdapterDesc.Description, ".");
+	logging.Log(indentation, "Dedicated video memory: ", dxgiAdapterDesc.DedicatedVideoMemory / 1024 / 1024, " MB.");
+	logging.Log(indentation, "Dedicated system memory: ", dxgiAdapterDesc.DedicatedSystemMemory / 1024 / 1024, " MB.");
+	logging.Log(indentation, "Shared system memory: ", dxgiAdapterDesc.SharedSystemMemory / 1024 / 1024, " MB.");
+	logging.Log(indentation, "Direct3D feature level: ", featureLevelString, ".");
 
 	dxgiAdapter->Release();
 	dxgiDevice->Release();

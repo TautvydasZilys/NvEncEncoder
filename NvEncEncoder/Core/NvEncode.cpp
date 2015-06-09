@@ -2,7 +2,7 @@
 #include "NvEncode.h"
 #include "Utilities\Logging.h"
 
-NvEncode::NvEncode() :
+NvEncode::NvEncode(Utilities::Logging& logging) :
 	m_NvEncodeApiDll(nullptr)
 {
 	ZeroStructure(&m_NvEncode);
@@ -17,8 +17,8 @@ NvEncode::NvEncode() :
 
 	if (m_NvEncodeApiDll == nullptr)
 	{
-		Utilities::Logging::Error("ERROR: Failed to load ", kNvEncodeApiDllName, ".");
-		return;
+		logging.Error("ERROR: Failed to load ", kNvEncodeApiDllName, ".");
+		throw std::runtime_error("Failed to load nvEncodeAPI.");
 	}
 
 	typedef NVENCSTATUS (NVENCAPI* NvEncodeAPICreateInstanceFunc)(NV_ENCODE_API_FUNCTION_LIST *functionList);

@@ -3,7 +3,7 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-	auto encoder = NEE_CreateEncoder();
+	auto encoder = NEE_CreateEncoder(L"Encoder.log", false);
 
 	if (encoder == nullptr)
 		return -1;

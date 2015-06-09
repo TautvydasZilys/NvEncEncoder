@@ -161,7 +161,6 @@
   <ItemGroup>
     <ClCompile Include="Core\D3D11Context.cpp" />
     <ClCompile Include="Core\NEE_Encoder.cpp" />
-    <ClCompile Include="Core\Initializer.cpp" />
     <ClCompile Include="Core\NEE_Api.cpp" />
     <ClCompile Include="Core\NvEncode.cpp" />
     <ClCompile Include="Core\PreviewWindow.cpp" />
@@ -177,7 +176,6 @@
   <ItemGroup>
     <ClInclude Include="Core\D3D11Context.h" />
     <ClInclude Include="Core\NEE_Encoder.h" />
-    <ClInclude Include="Core\Initializer.h" />
     <ClInclude Include="Core\NvEncode.h" />
     <ClInclude Include="Core\PreviewWindow.h" />
     <ClInclude Include="External\nvEncodeAPI.h" />
