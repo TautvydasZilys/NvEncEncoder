@@ -4,6 +4,9 @@
 
 D3D11Context::D3D11Context(Utilities::Logging& logging) :
 	m_D3D11Dll(nullptr)
+#if _DEBUG
+	, m_ThreadId(GetCurrentThreadId())
+#endif
 {
 	m_D3D11Dll = LoadLibraryW(L"d3d11.dll");
 
@@ -37,7 +40,7 @@ D3D11Context::D3D11Context(Utilities::Logging& logging) :
 		D3D_FEATURE_LEVEL_10_0
 	};
 
-	UINT d3d11Flags = 0;
+	UINT d3d11Flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
 
 #if _DEBUG
 	d3d11Flags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -52,6 +55,10 @@ D3D11Context::D3D11Context(Utilities::Logging& logging) :
 
 D3D11Context::~D3D11Context()
 {
+#if _DEBUG
+	Assert(GetCurrentThreadId() == m_ThreadId);
+#endif
+
 	auto result = FreeLibrary(m_D3D11Dll);
 	Assert(result != FALSE);
 }

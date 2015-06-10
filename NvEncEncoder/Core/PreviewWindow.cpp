@@ -43,12 +43,11 @@ std::unordered_map<HWND, PreviewWindow*> PreviewWindowStorage::s_HwndMap;
 
 struct WindowThreadContext
 {
-	Utilities::Event& windowCreationEvent;
-	D3D11Context& d3d11Context;
 	PreviewWindow& previewWindow;
+	Utilities::Event& windowCreationEvent;
 
-	inline WindowThreadContext(Utilities::Event& windowCreationEvent, D3D11Context& d3d11Context, PreviewWindow& previewWindow) :
-		windowCreationEvent(windowCreationEvent), d3d11Context(d3d11Context), previewWindow(previewWindow)
+	inline WindowThreadContext(PreviewWindow& previewWindow, Utilities::Event& windowCreationEvent) :
+		previewWindow(previewWindow), windowCreationEvent(windowCreationEvent)
 	{
 	}
 };
@@ -60,7 +59,7 @@ PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 	m_IsDestroyed(false), m_DestroyedEvent(true)
 {
 	Utilities::Event windowCreationEvent;
-	WindowThreadContext windowThreadContext(windowCreationEvent, d3d11Context, *this);
+	WindowThreadContext windowThreadContext(*this, windowCreationEvent);
 
 	auto windowThreadEntry = [](LPVOID lpThreadParameter) -> DWORD
 	{
@@ -68,7 +67,6 @@ PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 		auto& previewWindow = context.previewWindow;
 
 		previewWindow.CreateOSWindow();
-		previewWindow.CreateD3D11Resources(context.d3d11Context);
 
 		// NOTE: after this event is set, can't reference context anymore!
 		context.windowCreationEvent.Set();
@@ -85,7 +83,10 @@ PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 	auto result = CloseHandle(threadHandle);
 	Assert(result != FALSE);
 
+	Utilities::CriticalSection::Lock lock(m_RenderCriticalSection);
 	windowCreationEvent.Wait();
+
+	CreateD3D11Resources(d3d11Context);
 }
 
 PreviewWindow::~PreviewWindow()
@@ -101,10 +102,6 @@ void PreviewWindow::Cleanup()
 {
 	Utilities::CriticalSection::Lock lock(m_RenderCriticalSection);
 	Assert(m_IsDestroyed);
-
-	m_SwapChain = nullptr;
-	m_VertexShader = nullptr;
-	m_PixelShader = nullptr;
 
 	DestroyWindow(m_Hwnd);
 	m_DestroyedEvent.Set();
