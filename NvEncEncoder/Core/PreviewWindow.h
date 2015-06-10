@@ -10,8 +10,13 @@ class PreviewWindow
 	bool m_IsDestroyed;
 	HWND m_Hwnd;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_BackBufferRTV;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_ScaleBuffer;
 
 	Utilities::CriticalSection m_RenderCriticalSection;
 	Utilities::Event m_DestroyedEvent;

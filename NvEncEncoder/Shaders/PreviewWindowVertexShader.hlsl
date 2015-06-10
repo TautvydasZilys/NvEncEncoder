@@ -1,4 +1,4 @@
-cbuffer MatrixBuffer
+cbuffer ScaleBuffer
 {
 	float2 scale;
 };
