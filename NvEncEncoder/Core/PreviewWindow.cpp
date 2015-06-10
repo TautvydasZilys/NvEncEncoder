@@ -52,12 +52,14 @@ struct WindowThreadContext
 	}
 };
 
-static const int kInitialWidth = 800;
-static const int kInitialHeight = 450;
-
 PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 	m_IsDestroyed(false), m_DestroyedEvent(true)
 {
+	ZeroStructure(&m_CrossThreadItems);
+
+	m_CrossThreadItems.m_WindowWidth = 800;
+	m_CrossThreadItems.m_WindowHeight = 450;	
+
 	Utilities::Event windowCreationEvent;
 	WindowThreadContext windowThreadContext(*this, windowCreationEvent);
 
@@ -83,9 +85,7 @@ PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 	auto result = CloseHandle(threadHandle);
 	Assert(result != FALSE);
 
-	Utilities::CriticalSection::Lock lock(m_RenderCriticalSection);
 	windowCreationEvent.Wait();
-
 	CreateD3D11Resources(d3d11Context);
 }
 
@@ -100,7 +100,6 @@ PreviewWindow::~PreviewWindow()
 
 void PreviewWindow::Cleanup()
 {
-	Utilities::CriticalSection::Lock lock(m_RenderCriticalSection);
 	Assert(m_IsDestroyed);
 
 	DestroyWindow(m_Hwnd);
@@ -129,12 +128,14 @@ void PreviewWindow::CreateOSWindow()
 	static ATOM s_WindowClassAtom = CreateWindowClass();
 	const DWORD kWindowStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_VISIBLE;
 
+	Utilities::CriticalSection::Lock lock(m_WindowCriticalSection);
+
 	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(s_WindowClassAtom), L"NEE Preview", kWindowStyle,
-		200, 200, kInitialWidth, kInitialHeight, nullptr, nullptr, GetModuleHandleW(nullptr), this);
+		200, 200, m_CrossThreadItems.m_WindowWidth, m_CrossThreadItems.m_WindowHeight, nullptr, nullptr, GetModuleHandleW(nullptr), this);
 	Assert(m_Hwnd != nullptr);
 }
 
-static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, IDXGISwapChain** swapChain, ID3D11RenderTargetView** backBufferRTV)
+static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, uint16_t width, uint16_t height, IDXGISwapChain** swapChain, ID3D11RenderTargetView** backBufferRTV)
 {
 	Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
 	Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
@@ -153,8 +154,8 @@ static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, IDXGISw
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ZeroStructure(&swapChainDesc);
 
-	swapChainDesc.BufferDesc.Width = kInitialWidth;
-	swapChainDesc.BufferDesc.Height = kInitialHeight;
+	swapChainDesc.BufferDesc.Width = width;
+	swapChainDesc.BufferDesc.Height = height;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
@@ -194,7 +195,7 @@ static inline void CreateShadersAndInputLayout(ID3D11Device* d3d11Device, ID3D11
 	Assert(SUCCEEDED(hr));
 }
 
-static inline void CreateBuffers(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** scaleBuffer)
+static inline void CreateBuffers(ID3D11Device* d3d11Device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** scaleBuffer, uint32_t* vertexBufferStride, uint32_t* vertexBufferOffset)
 {
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroStructure(&bufferDesc);
@@ -203,15 +204,17 @@ static inline void CreateBuffers(ID3D11Device* d3d11Device, ID3D11Buffer** verte
 	Vertex vertices[] =
 	{
 		{ -1.0f, -1.0f },
-		{ -1.0f, -1.0f },
-		{ 1.0f, 1.0f },
-		{ 1.0f, -1.0f }
+		{ -1.0f, 1.0f },
+		{ 1.0f, -1.0f },
+		{ 1.0f, 1.0f }
 	};
+
+	*vertexBufferOffset = 0;
 
 	bufferDesc.ByteWidth = sizeof(vertices);
 	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.StructureByteStride = sizeof(Vertex);
+	bufferDesc.StructureByteStride = *vertexBufferStride = sizeof(Vertex);
 
 	D3D11_SUBRESOURCE_DATA vertexData;
 	ZeroStructure(&vertexData);
@@ -251,12 +254,20 @@ static inline void CreateSamplerState(ID3D11Device* d3d11Device, ID3D11SamplerSt
 }
 
 void PreviewWindow::CreateD3D11Resources(D3D11Context& d3d11Context)
-{	
+{
+	uint16_t windowWidth, windowHeight;
+
+	{
+		Utilities::CriticalSection::Lock lock(m_WindowCriticalSection);
+		windowWidth = m_CrossThreadItems.m_WindowWidth;
+		windowHeight = m_CrossThreadItems.m_WindowHeight;
+	}
+
 	auto d3d11Device = d3d11Context.GetDevice();
 
-	CreateSwapChain(m_Hwnd, d3d11Device, m_SwapChain.ReleaseAndGetAddressOf(), m_BackBufferRTV.ReleaseAndGetAddressOf());
+	CreateSwapChain(m_Hwnd, d3d11Device, windowWidth, windowHeight, m_SwapChain.ReleaseAndGetAddressOf(), m_BackBufferRTV.ReleaseAndGetAddressOf());
 	CreateShadersAndInputLayout(d3d11Device, m_VertexShader.ReleaseAndGetAddressOf(), m_PixelShader.ReleaseAndGetAddressOf(), m_InputLayout.ReleaseAndGetAddressOf());
-	CreateBuffers(d3d11Device, m_VertexBuffer.ReleaseAndGetAddressOf(), m_ScaleBuffer.ReleaseAndGetAddressOf());
+	CreateBuffers(d3d11Device, m_VertexBuffer.ReleaseAndGetAddressOf(), m_ScaleBuffer.ReleaseAndGetAddressOf(), &m_VertexBufferStride, &m_VertexBufferOffset);
 	CreateSamplerState(d3d11Device, m_SamplerState.ReleaseAndGetAddressOf());
 }
 
@@ -269,6 +280,17 @@ LRESULT CALLBACK PreviewWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, L
 			auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
 			auto windowInstance = static_cast<PreviewWindow*>(createStruct->lpCreateParams);
 			PreviewWindowStorage::AddWindow(hwnd, windowInstance);
+		}
+		break;
+		
+	case WM_SIZE:
+		{
+			auto window = PreviewWindowStorage::RetrieveWindow(hwnd);
+
+			Utilities::CriticalSection::Lock lock(window->m_WindowCriticalSection);
+			window->m_CrossThreadItems.m_WindowWidth = LOWORD(lParam);
+			window->m_CrossThreadItems.m_WindowHeight = HIWORD(lParam);
+			window->m_CrossThreadItems.m_WindowSizeDirty = true;
 		}
 		break;
 
@@ -292,4 +314,98 @@ void PreviewWindow::WindowLoop()
 		if (result != FALSE)
 			DispatchMessageW(&msg);
 	}
+}
+
+void PreviewWindow::ResizeSwapchain(ID3D11DeviceContext* d3d11DeviceContext)
+{
+	Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
+	Microsoft::WRL::ComPtr<ID3D11Resource> backBuffer;
+
+	d3d11DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+	m_BackBufferRTV = nullptr;
+
+	auto hr = m_SwapChain->ResizeBuffers(0, m_CrossThreadItems.m_WindowWidth, m_CrossThreadItems.m_WindowHeight, DXGI_FORMAT_UNKNOWN, 0);
+	Assert(SUCCEEDED(hr));
+
+	d3d11DeviceContext->GetDevice(&d3d11Device);
+
+	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
+	Assert(SUCCEEDED(hr));
+
+	hr = d3d11Device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_BackBufferRTV);
+	Assert(SUCCEEDED(hr));
+}
+
+void PreviewWindow::UpdateScaleBuffer(ID3D11DeviceContext* d3d11DeviceContext)
+{
+	struct { float x, y; } scale;
+
+	auto windowAspectRatio = static_cast<float>(m_CrossThreadItems.m_WindowWidth) / static_cast<float>(m_CrossThreadItems.m_WindowHeight);
+
+	if (windowAspectRatio > m_CrossThreadItems.m_TextureAspectRatio)
+	{
+		// Vertical bars
+		scale.x = m_CrossThreadItems.m_TextureAspectRatio / windowAspectRatio;
+		scale.y = 1.0f;
+	}
+	else
+	{
+		// Horizontal bars
+		scale.x = 1.0f;
+		scale.y = windowAspectRatio / m_CrossThreadItems.m_TextureAspectRatio;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE subresource;
+
+	auto hr = d3d11DeviceContext->Map(m_ScaleBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+	Assert(SUCCEEDED(hr));
+
+	memcpy(subresource.pData, &scale, sizeof(scale));
+
+	d3d11DeviceContext->Unmap(m_ScaleBuffer.Get(), 0);
+}
+
+void PreviewWindow::Blit(ID3D11DeviceContext* d3d11DeviceContext, ID3D11ShaderResourceView* texture, int textureWidth, int textureHeight)
+{
+	uint16_t windowWidth, windowHeight;
+
+	{
+		Utilities::CriticalSection::Lock lock(m_WindowCriticalSection);
+
+		auto newTextureAspectRatio = static_cast<float>(textureWidth) / static_cast<float>(textureHeight);
+
+		if (m_CrossThreadItems.m_WindowSizeDirty || newTextureAspectRatio != m_CrossThreadItems.m_TextureAspectRatio)
+		{
+			if (m_CrossThreadItems.m_WindowSizeDirty)
+			{
+				m_CrossThreadItems.m_WindowSizeDirty = false;
+				ResizeSwapchain(d3d11DeviceContext);
+			}
+
+			m_CrossThreadItems.m_TextureAspectRatio = newTextureAspectRatio;
+			UpdateScaleBuffer(d3d11DeviceContext);
+		}
+
+		windowWidth = m_CrossThreadItems.m_WindowWidth;
+		windowHeight = m_CrossThreadItems.m_WindowHeight;
+	}
+
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	d3d11DeviceContext->ClearRenderTargetView(m_BackBufferRTV.Get(), clearColor);
+
+	const D3D11_VIEWPORT viewPort = { 0.0f, 0.0f, static_cast<float>(windowWidth), static_cast<float>(windowHeight), 0.0f, 1.0f };
+
+	d3d11DeviceContext->IASetInputLayout(m_InputLayout.Get());
+	d3d11DeviceContext->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &m_VertexBufferStride, &m_VertexBufferOffset);
+	d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	d3d11DeviceContext->VSSetConstantBuffers(0, 1, m_ScaleBuffer.GetAddressOf());
+	d3d11DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+	d3d11DeviceContext->RSSetViewports(1, &viewPort);
+	d3d11DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+	d3d11DeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+	d3d11DeviceContext->PSSetShaderResources(0, 1, &texture);
+	d3d11DeviceContext->OMSetRenderTargets(1, m_BackBufferRTV.GetAddressOf(), nullptr);
+	d3d11DeviceContext->Draw(4, 0);
+
+	m_SwapChain->Present(1, 0);
 }
