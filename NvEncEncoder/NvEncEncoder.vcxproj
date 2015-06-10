@@ -215,6 +215,7 @@
     <ClInclude Include="PrecompiledHeader.h" />
     <ClInclude Include="Utilities\CriticalSection.h" />
     <ClInclude Include="Utilities\Encoding.h" />
+    <ClInclude Include="Utilities\Event.h" />
     <ClInclude Include="Utilities\Logging.h" />
   </ItemGroup>
   <ItemGroup>

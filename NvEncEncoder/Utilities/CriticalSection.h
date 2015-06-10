@@ -24,6 +24,9 @@ namespace Utilities
 			DeleteCriticalSection(&m_CriticalSection);
 		}
 
+		CriticalSection(const CriticalSection&) = delete;
+		CriticalSection& operator=(const CriticalSection&) = delete;
+
 		inline void Enter()
 		{
 			EnterCriticalSection(&m_CriticalSection);
@@ -50,6 +53,9 @@ namespace Utilities
 			{
 				m_Section.Leave();
 			}
+
+			Lock(const Lock&) = delete;
+			Lock& operator=(const Lock&) = delete;
 		};
 	};
 }

@@ -53,6 +53,9 @@
     <ClInclude Include="Core\PreviewWindow.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\Event.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">

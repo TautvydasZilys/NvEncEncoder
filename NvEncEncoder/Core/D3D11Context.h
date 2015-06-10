@@ -15,6 +15,9 @@ public:
 	D3D11Context(Utilities::Logging& logging);
 	~D3D11Context();
 
+	D3D11Context(const D3D11Context&) = delete;
+	D3D11Context& operator=(const D3D11Context&) = delete;
+
 	inline ID3D11Device* GetDevice() { return m_Device.Get(); }
 	inline ID3D11DeviceContext* GetDeviceContext() { return m_DeviceContext.Get(); }
 };

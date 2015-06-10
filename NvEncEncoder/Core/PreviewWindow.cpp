@@ -3,23 +3,110 @@
 #include "PreviewWindow.h"
 #include "Shaders\PreviewWindowPixelShader.h"
 #include "Shaders\PreviewWindowVertexShader.h"
-#include "Utilities\CriticalSection.h"
+#include "Utilities\Event.h"
 
-Utilities::CriticalSection g_HwndMapCriticalSection;
-std::unordered_map<HWND, PreviewWindow*> g_HwndMap;
+class PreviewWindowStorage
+{
+private:
+	static Utilities::CriticalSection s_HwndMapCriticalSection;
+	static std::unordered_map<HWND, PreviewWindow*> s_HwndMap;
+	
+public:
+	PreviewWindowStorage() = delete;
+	PreviewWindowStorage(const PreviewWindowStorage&) = delete;
+	PreviewWindowStorage& operator=(const PreviewWindowStorage&) = delete;
 
-const int kInitialWidth = 800;
-const int kInitialHeight = 450;
+	inline static void AddWindow(HWND hwnd, PreviewWindow* windowInstance)
+	{
+		Utilities::CriticalSection::Lock lock(s_HwndMapCriticalSection);
+		s_HwndMap.insert(std::make_pair(hwnd, windowInstance));
+	}
+
+	inline static PreviewWindow* RetrieveWindow(HWND hwnd)
+	{
+		Utilities::CriticalSection::Lock lock(s_HwndMapCriticalSection);
+		
+		auto it = s_HwndMap.find(hwnd);
+		Assert(it != s_HwndMap.end());
+
+		return it->second;
+	}
+
+	inline static void RemoveWindow(HWND hwnd)
+	{
+		Utilities::CriticalSection::Lock lock(s_HwndMapCriticalSection);
+		s_HwndMap.erase(hwnd);
+	}
+};
+
+Utilities::CriticalSection PreviewWindowStorage::s_HwndMapCriticalSection;
+std::unordered_map<HWND, PreviewWindow*> PreviewWindowStorage::s_HwndMap;
+
+struct WindowThreadContext
+{
+	Utilities::Event& windowCreationEvent;
+	D3D11Context& d3d11Context;
+	PreviewWindow& previewWindow;
+
+	inline WindowThreadContext(Utilities::Event& windowCreationEvent, D3D11Context& d3d11Context, PreviewWindow& previewWindow) :
+		windowCreationEvent(windowCreationEvent), d3d11Context(d3d11Context), previewWindow(previewWindow)
+	{
+	}
+};
+
+static const int kInitialWidth = 800;
+static const int kInitialHeight = 450;
 
 PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
-	m_IsDestroyed(false)
+	m_IsDestroyed(false), m_DestroyedEvent(true)
 {
-	auto hwnd = CreateOSWindow();
-	CreateD3D11Resources(hwnd, d3d11Context);
+	Utilities::Event windowCreationEvent;
+	WindowThreadContext windowThreadContext(windowCreationEvent, d3d11Context, *this);
+
+	auto windowThreadEntry = [](LPVOID lpThreadParameter) -> DWORD
+	{
+		WindowThreadContext& context = *static_cast<WindowThreadContext*>(lpThreadParameter);
+		
+		context.previewWindow.CreateOSWindow();
+		context.previewWindow.CreateD3D11Resources(context.d3d11Context);
+
+		context.windowCreationEvent.Set();
+
+		context.previewWindow.WindowLoop();
+		context.previewWindow.Cleanup();
+
+		return 0;
+	};
+
+	auto threadHandle = CreateThread(nullptr, 64 * 1024, windowThreadEntry, &windowThreadContext, 0, nullptr);
+	Assert(threadHandle != nullptr);
+
+	auto result = CloseHandle(threadHandle);
+	Assert(result != FALSE);
+
+	windowCreationEvent.Wait();
 }
 
 PreviewWindow::~PreviewWindow()
 {
+	if (!m_IsDestroyed)
+		m_IsDestroyed = true;
+
+	m_DestroyedEvent.Wait();
+	PreviewWindowStorage::RemoveWindow(m_Hwnd);
+}
+
+void PreviewWindow::Cleanup()
+{
+	Utilities::CriticalSection::Lock lock(m_RenderCriticalSection);
+	Assert(m_IsDestroyed);
+
+	m_SwapChain = nullptr;
+	m_VertexShader = nullptr;
+	m_PixelShader = nullptr;
+
+	DestroyWindow(m_Hwnd);
+	m_DestroyedEvent.Set();
 }
 
 ATOM PreviewWindow::CreateWindowClass()
@@ -39,15 +126,13 @@ ATOM PreviewWindow::CreateWindowClass()
 	return classAtom;
 }
 
-HWND PreviewWindow::CreateOSWindow()
+void PreviewWindow::CreateOSWindow()
 {
 	static ATOM s_WindowClassAtom = CreateWindowClass();
 	
-	auto hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(s_WindowClassAtom), L"NEE Preview", WS_CAPTION | WS_SIZEBOX | WS_VISIBLE,
+	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(s_WindowClassAtom), L"NEE Preview", WS_CAPTION | WS_SIZEBOX | WS_VISIBLE,
 		200, 200, kInitialWidth, kInitialHeight, nullptr, nullptr, GetModuleHandleW(nullptr), this);
-	Assert(hwnd != nullptr);
-
-	return hwnd;
+	Assert(m_Hwnd != nullptr);
 }
 
 static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, IDXGISwapChain** swapChain)
@@ -92,11 +177,11 @@ static inline void CreateShaders(ID3D11Device* d3d11Device, ID3D11VertexShader**
 	Assert(SUCCEEDED(hr));
 }
 
-void PreviewWindow::CreateD3D11Resources(HWND hwnd, D3D11Context& d3d11Context)
+void PreviewWindow::CreateD3D11Resources(D3D11Context& d3d11Context)
 {	
 	auto d3d11Device = d3d11Context.GetDevice();
 
-	CreateSwapChain(hwnd, d3d11Device, m_SwapChain.ReleaseAndGetAddressOf());
+	CreateSwapChain(m_Hwnd, d3d11Device, m_SwapChain.ReleaseAndGetAddressOf());
 	CreateShaders(d3d11Device, m_VertexShader.ReleaseAndGetAddressOf(), m_PixelShader.ReleaseAndGetAddressOf());
 }
 
@@ -106,12 +191,30 @@ LRESULT CALLBACK PreviewWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	{
 	case WM_CREATE:
 		{
-			Utilities::CriticalSection::Lock lock(g_HwndMapCriticalSection);
 			auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
 			auto windowInstance = static_cast<PreviewWindow*>(createStruct->lpCreateParams);
-			g_HwndMap.insert(std::make_pair(hwnd, windowInstance));
+			PreviewWindowStorage::AddWindow(hwnd, windowInstance);
 		}
+		break;
+
+	case WM_DESTROY:
+		PreviewWindowStorage::RetrieveWindow(hwnd)->m_IsDestroyed = true;
+		break;
 	}
 
 	return DefWindowProcW(hwnd, msg, wParam, lParam);
+}
+
+void PreviewWindow::WindowLoop()
+{
+	MSG msg;
+
+	while (!m_IsDestroyed)
+	{
+		auto result = GetMessageW(&msg, m_Hwnd, 0, 0);
+		Assert(result != -1);
+
+		if (result != FALSE)
+			DispatchMessageW(&msg);
+	}
 }
