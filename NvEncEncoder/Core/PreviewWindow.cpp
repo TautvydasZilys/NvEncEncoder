@@ -3,7 +3,6 @@
 #include "PreviewWindow.h"
 #include "Shaders\PreviewWindowPixelShader.h"
 #include "Shaders\PreviewWindowVertexShader.h"
-#include "Utilities\Event.h"
 
 class PreviewWindowStorage
 {
@@ -66,14 +65,16 @@ PreviewWindow::PreviewWindow(D3D11Context& d3d11Context) :
 	auto windowThreadEntry = [](LPVOID lpThreadParameter) -> DWORD
 	{
 		WindowThreadContext& context = *static_cast<WindowThreadContext*>(lpThreadParameter);
-		
-		context.previewWindow.CreateOSWindow();
-		context.previewWindow.CreateD3D11Resources(context.d3d11Context);
+		auto& previewWindow = context.previewWindow;
 
+		previewWindow.CreateOSWindow();
+		previewWindow.CreateD3D11Resources(context.d3d11Context);
+
+		// NOTE: after this event is set, can't reference context anymore!
 		context.windowCreationEvent.Set();
 
-		context.previewWindow.WindowLoop();
-		context.previewWindow.Cleanup();
+		previewWindow.WindowLoop();
+		previewWindow.Cleanup();
 
 		return 0;
 	};
@@ -129,8 +130,9 @@ ATOM PreviewWindow::CreateWindowClass()
 void PreviewWindow::CreateOSWindow()
 {
 	static ATOM s_WindowClassAtom = CreateWindowClass();
-	
-	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(s_WindowClassAtom), L"NEE Preview", WS_CAPTION | WS_SIZEBOX | WS_VISIBLE,
+	const DWORD kWindowStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_VISIBLE;
+
+	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(s_WindowClassAtom), L"NEE Preview", kWindowStyle,
 		200, 200, kInitialWidth, kInitialHeight, nullptr, nullptr, GetModuleHandleW(nullptr), this);
 	Assert(m_Hwnd != nullptr);
 }
@@ -160,6 +162,7 @@ static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, IDXGISw
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.BufferUsage = DXGI_USAGE_BACK_BUFFER | DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd;
 	swapChainDesc.Windowed = TRUE;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;

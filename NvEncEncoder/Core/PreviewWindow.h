@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utilities\CriticalSection.h"
+#include "Utilities\Event.h"
 
 class D3D11Context;
 

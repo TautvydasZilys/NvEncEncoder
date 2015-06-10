@@ -10,8 +10,7 @@ namespace Utilities
 		HANDLE m_Event;
 
 #if _DEBUG
-		CriticalSection m_CriticalSection;
-		bool m_IsSet;
+		volatile bool m_IsSet;
 		const bool m_IsManualReset;
 #endif
 
@@ -35,34 +34,33 @@ namespace Utilities
 
 		inline void Set()
 		{
-#if _DEBUG
-			CriticalSection::Lock lock(m_CriticalSection);
-			m_IsSet = true;
-#endif
 			auto result = SetEvent(m_Event);
 			Assert(result != FALSE);
+
+#if _DEBUG
+			m_IsSet = true;	// Not really thread safe, but whatever. It's there for debugging purposes only.
+#endif
 		}
 		
 		inline void Reset()
 		{
-#if _DEBUG
-			CriticalSection::Lock lock(m_CriticalSection);
-			m_IsSet = false;
-#endif
 			auto result = ResetEvent(m_Event);
 			Assert(result != FALSE);
+
+#if _DEBUG
+			m_IsSet = false;
+#endif
 		}
 
 		inline void Wait()
 		{
-#if _DEBUG
-			CriticalSection::Lock lock(m_CriticalSection);
+			auto result = WaitForSingleObject(m_Event, INFINITE);
+			Assert(result == WAIT_OBJECT_0);
 
+#if _DEBUG
 			if (!m_IsManualReset)
 				m_IsSet = false;
 #endif
-			auto result = WaitForSingleObject(m_Event, INFINITE);
-			Assert(result == WAIT_OBJECT_0);
 		}
 	};
 }
