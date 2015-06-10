@@ -14,7 +14,7 @@ private:
 	HWND CreateOSWindow();
 	void CreateD3D11Resources(HWND hwnd, D3D11Context& d3d11Context);
 
-	LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 public:
 	PreviewWindow(D3D11Context& d3d11Context);

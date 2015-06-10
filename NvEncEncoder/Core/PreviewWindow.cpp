@@ -32,30 +32,7 @@ ATOM PreviewWindow::CreateWindowClass()
 	windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowInfo.lpszClassName = L"NEE_PreviewWindow";
 	windowInfo.cbSize = sizeof(windowInfo);
-	windowInfo.lpfnWndProc = [](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-	{
-		PreviewWindow* window;
-
-		{
-			Utilities::CriticalSection::Lock lock(g_HwndMapCriticalSection);
-
-			if (msg == WM_CREATE)
-			{
-				auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
-				window = static_cast<PreviewWindow*>(createStruct->lpCreateParams);
-				g_HwndMap.insert(std::make_pair(hwnd, window));
-			}
-			else
-			{
-				auto it = g_HwndMap.find(hwnd);
-				Assert(it != g_HwndMap.end());
-
-				window = it->second;
-			}
-		}
-
-		return window->WindowProc(hwnd, msg, wParam, lParam);
-	};
+	windowInfo.lpfnWndProc = WindowProc;
 
 	auto classAtom = RegisterClassExW(&windowInfo);
 	Assert(classAtom != 0);
@@ -125,5 +102,16 @@ void PreviewWindow::CreateD3D11Resources(HWND hwnd, D3D11Context& d3d11Context)
 
 LRESULT CALLBACK PreviewWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	switch (msg)
+	{
+	case WM_CREATE:
+		{
+			Utilities::CriticalSection::Lock lock(g_HwndMapCriticalSection);
+			auto createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
+			auto windowInstance = static_cast<PreviewWindow*>(createStruct->lpCreateParams);
+			g_HwndMap.insert(std::make_pair(hwnd, windowInstance));
+		}
+	}
+
 	return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
