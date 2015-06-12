@@ -31,7 +31,6 @@ D3D11Context::D3D11Context(Utilities::Logging& logging) :
 	auto d3d11CreateDevice = reinterpret_cast<D3D11CreateDeviceFunc>(GetProcAddress(m_D3D11Dll, "D3D11CreateDevice"));
 	Assert(d3d11CreateDevice != nullptr);
 
-	D3D_FEATURE_LEVEL featureLevel;
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
@@ -47,10 +46,8 @@ D3D11Context::D3D11Context(Utilities::Logging& logging) :
 #endif
 
 	auto hr = d3d11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, d3d11Flags, featureLevels,
-		ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &m_Device, &featureLevel, &m_DeviceContext);
+		ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &m_Device, &m_FeatureLevel, &m_DeviceContext);
 	Assert(SUCCEEDED(hr));
-
-	PrintDeviceInfo(logging, m_Device.Get(), featureLevel);
 }
 
 D3D11Context::~D3D11Context()
@@ -63,13 +60,13 @@ D3D11Context::~D3D11Context()
 	Assert(result != FALSE);
 }
 
-void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* device, D3D_FEATURE_LEVEL featureLevel)
+void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging)
 {
 	Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
 	Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
 	DXGI_ADAPTER_DESC dxgiAdapterDesc;
 
-	auto hr = device->QueryInterface(dxgiDevice.ReleaseAndGetAddressOf());
+	auto hr = m_Device.As(&dxgiDevice);
 	Assert(SUCCEEDED(hr));
 
 	hr = dxgiDevice->GetAdapter(&dxgiAdapter);
@@ -80,7 +77,7 @@ void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* de
 
 	const char* featureLevelString = "Unknown";
 
-	switch (featureLevel)
+	switch (m_FeatureLevel)
 	{
 	case D3D_FEATURE_LEVEL_11_1:
 		featureLevelString = "11.1";

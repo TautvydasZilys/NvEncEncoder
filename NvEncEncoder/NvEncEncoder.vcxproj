@@ -195,7 +195,6 @@
     <ClCompile Include="Core\NEE_Encoder.cpp" />
     <ClCompile Include="Core\NEE_Api.cpp" />
     <ClCompile Include="Core\NvEncode.cpp" />
-    <ClCompile Include="Core\PreviewWindow.cpp" />
     <ClCompile Include="PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -204,12 +203,14 @@
     </ClCompile>
     <ClCompile Include="Utilities\Encoding.cpp" />
     <ClCompile Include="Utilities\Logging.cpp" />
+    <ClCompile Include="Windowing\PreviewWindow.cpp" />
+    <ClCompile Include="Windowing\PreviewWindowRenderer.cpp" />
+    <ClCompile Include="Windowing\WindowStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\D3D11Context.h" />
     <ClInclude Include="Core\NEE_Encoder.h" />
     <ClInclude Include="Core\NvEncode.h" />
-    <ClInclude Include="Core\PreviewWindow.h" />
     <ClInclude Include="External\nvEncodeAPI.h" />
     <ClInclude Include="Include\NEE_Api.h" />
     <ClInclude Include="PrecompiledHeader.h" />
@@ -217,6 +218,9 @@
     <ClInclude Include="Utilities\Encoding.h" />
     <ClInclude Include="Utilities\Event.h" />
     <ClInclude Include="Utilities\Logging.h" />
+    <ClInclude Include="Windowing\PreviewWindow.h" />
+    <ClInclude Include="Windowing\PreviewWindowRenderer.h" />
+    <ClInclude Include="Windowing\WindowStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Utilities\Encoding.inl" />

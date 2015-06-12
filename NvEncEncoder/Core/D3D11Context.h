@@ -8,12 +8,11 @@ private:
 	HMODULE m_D3D11Dll;
 	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;
+	D3D_FEATURE_LEVEL m_FeatureLevel;
 
 #if _DEBUG
 	const DWORD m_ThreadId;
 #endif
-
-	static void PrintDeviceInfo(Utilities::Logging& logging, ID3D11Device* device, D3D_FEATURE_LEVEL featureLevel);
 
 public:
 	D3D11Context(Utilities::Logging& logging);
@@ -37,4 +36,6 @@ public:
 #endif
 		return m_DeviceContext.Get();
 	}
+
+	void PrintDeviceInfo(Utilities::Logging& logging);
 };

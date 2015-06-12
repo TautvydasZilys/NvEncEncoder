@@ -12,6 +12,7 @@
 #undef min
 #undef max
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <unordered_map>

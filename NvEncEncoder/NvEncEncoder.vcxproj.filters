@@ -20,8 +20,14 @@
     <ClCompile Include="Core\NEE_Api.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\PreviewWindow.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="Windowing\PreviewWindowRenderer.cpp">
+      <Filter>Windowing</Filter>
+    </ClCompile>
+    <ClCompile Include="Windowing\PreviewWindow.cpp">
+      <Filter>Windowing</Filter>
+    </ClCompile>
+    <ClCompile Include="Windowing\WindowStorage.cpp">
+      <Filter>Windowing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,11 +56,17 @@
     <ClInclude Include="Include\NEE_Api.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Core\PreviewWindow.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\Event.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Windowing\PreviewWindow.h">
+      <Filter>Windowing</Filter>
+    </ClInclude>
+    <ClInclude Include="Windowing\PreviewWindowRenderer.h">
+      <Filter>Windowing</Filter>
+    </ClInclude>
+    <ClInclude Include="Windowing\WindowStorage.h">
+      <Filter>Windowing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +84,9 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{e1e17a2c-9124-4d75-9868-4fa466148f1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing">
+      <UniqueIdentifier>{ee1d4b3d-a0fb-40bc-943b-dba443292e0a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
