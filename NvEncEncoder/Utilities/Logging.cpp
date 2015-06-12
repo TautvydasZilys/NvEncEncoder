@@ -24,7 +24,7 @@ Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 
 		auto result = WriteFile(m_OutputFile, twoNewLines, sizeof(twoNewLines) - 1, &bytesWritten, nullptr);
 		Assert(result != FALSE);
-		Assert(bytesWritten = sizeof(twoNewLines));
+		Assert(bytesWritten == sizeof(twoNewLines));
 	}
 	else
 	{
@@ -33,7 +33,7 @@ Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 
 		auto result = WriteFile(m_OutputFile, utf8ByteOrderMark, sizeof(utf8ByteOrderMark), &bytesWritten, nullptr);
 		Assert(result != FALSE);
-		Assert(bytesWritten = sizeof(utf8ByteOrderMark));
+		Assert(bytesWritten == sizeof(utf8ByteOrderMark));
 	}
 
 	SetLastError(ERROR_SUCCESS);

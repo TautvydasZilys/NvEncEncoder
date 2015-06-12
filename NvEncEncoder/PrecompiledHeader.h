@@ -17,10 +17,12 @@
 #include <string>
 #include <unordered_map>
 
+#define UNREFERENCED(x) do { if (0, 0) { (void)(x); } } while (0, 0)
+
 #if _DEBUG
-#define Assert(x) do { if (!(x)) { if (IsDebuggerPresent()) { __debugbreak(); } } } while (false)
+#define Assert(x) do { if (!(x)) { if (IsDebuggerPresent()) { __debugbreak(); } } } while (0, 0)
 #else
-#define Assert(x)
+#define Assert(x) UNREFERENCED(x)
 #endif
 
 template <typename T>

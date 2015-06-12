@@ -21,6 +21,11 @@ namespace Windowing
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_ScaleBuffer;
 
+		// Used only in DX11.1
+		Microsoft::WRL::ComPtr<IDXGISwapChain2> m_SwapChain2;
+		uint16_t m_SwapChainWidth;
+		uint16_t m_SwapChainHeight;
+
 		std::atomic<IDXGIResource*> m_OriginalSharedTexture;
 		IDXGIResource* m_LastOriginalTexture;
 

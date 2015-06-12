@@ -3,6 +3,11 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+	UNREFERENCED(hInstance);
+	UNREFERENCED(hPrevInstance);
+	UNREFERENCED(pCmdLine);
+	UNREFERENCED(nCmdShow);
+
 	auto encoder = NEE_CreateEncoder(L"Encoder.log", false);
 
 	if (encoder == nullptr)

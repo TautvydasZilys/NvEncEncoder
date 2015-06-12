@@ -15,6 +15,9 @@ struct WindowThreadContext
 		previewWindow(previewWindow), windowCreationEvent(windowCreationEvent), logging(logging)
 	{
 	}
+
+	WindowThreadContext(const WindowThreadContext&) = delete;
+	WindowThreadContext operator=(const WindowThreadContext&) = delete;
 };
 
 PreviewWindow::PreviewWindow(Utilities::Logging& logging)

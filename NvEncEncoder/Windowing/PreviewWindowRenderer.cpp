@@ -107,13 +107,21 @@ static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, uint16_
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.BufferUsage = DXGI_USAGE_BACK_BUFFER | DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferCount = 2;
 	swapChainDesc.OutputWindow = hwnd;
 	swapChainDesc.Windowed = TRUE;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
 	hr = dxgiFactory->CreateSwapChain(d3d11Device, &swapChainDesc, &swapChain);
-	Assert(SUCCEEDED(hr));
+	
+	if (FAILED(hr))
+	{
+		swapChainDesc.BufferCount = 1;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;	// DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL is supported only on Windows 8 and up
+
+		hr = dxgiFactory->CreateSwapChain(d3d11Device, &swapChainDesc, &swapChain);
+		Assert(SUCCEEDED(hr));
+	}
 
 	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
 	Assert(SUCCEEDED(hr));
@@ -207,16 +215,43 @@ void PreviewWindowRenderer::CreateD3D11Resources()
 	CreateShadersAndInputLayout(d3d11Device, *m_VertexShader.ReleaseAndGetAddressOf(), *m_PixelShader.ReleaseAndGetAddressOf(), *m_InputLayout.ReleaseAndGetAddressOf());
 	CreateBuffers(d3d11Device, *m_VertexBuffer.ReleaseAndGetAddressOf(), *m_ScaleBuffer.ReleaseAndGetAddressOf(), m_VertexBufferStride, m_VertexBufferOffset);
 	CreateSamplerState(d3d11Device, *m_SamplerState.ReleaseAndGetAddressOf());
+
+	m_SwapChain.As(&m_SwapChain2);
+	
+	if (m_SwapChain2 != nullptr)
+	{
+		m_SwapChainWidth = m_WindowWidth;
+		m_SwapChainHeight = m_WindowHeight;
+	}
 }
 
 void PreviewWindowRenderer::ResizeSwapchain()
 {
+	HRESULT hr;
+
+	if (m_SwapChain2 != nullptr)
+	{
+		if (m_WindowWidth <= m_SwapChainWidth && m_WindowHeight <= m_SwapChainHeight)
+		{
+			hr = m_SwapChain2->SetSourceSize(m_WindowWidth, m_WindowHeight);
+			Assert(SUCCEEDED(hr));
+
+			return;
+		}
+		else
+		{
+			m_SwapChainWidth = m_WindowWidth;
+			m_SwapChainHeight = m_WindowHeight;
+		}
+	}
+
+
 	Microsoft::WRL::ComPtr<ID3D11Resource> backBuffer;
 
 	m_D3D11Context.GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 	m_BackBufferRTV = nullptr;
 
-	auto hr = m_SwapChain->ResizeBuffers(0, m_WindowWidth, m_WindowHeight, DXGI_FORMAT_UNKNOWN, 0);
+	hr = m_SwapChain->ResizeBuffers(0, m_WindowWidth, m_WindowHeight, DXGI_FORMAT_UNKNOWN, 0);
 	Assert(SUCCEEDED(hr));
 
 	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
@@ -279,8 +314,8 @@ bool PreviewWindowRenderer::RecreateStagingTexture()
 	if (textureDesc.Width == m_TextureWidth && textureDesc.Height == m_TextureHeight)
 		return false;
 
-	m_TextureWidth = textureDesc.Width;
-	m_TextureHeight = textureDesc.Height;
+	m_TextureWidth = static_cast<uint16_t>(textureDesc.Width);
+	m_TextureHeight = static_cast<uint16_t>(textureDesc.Height);
 
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
