@@ -24,7 +24,7 @@ Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 
 		auto result = WriteFile(m_OutputFile, twoNewLines, sizeof(twoNewLines) - 1, &bytesWritten, nullptr);
 		Assert(result != FALSE);
-		Assert(bytesWritten == sizeof(twoNewLines));
+		Assert(bytesWritten == sizeof(twoNewLines) - 1);
 	}
 	else
 	{
@@ -38,12 +38,12 @@ Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 
 	SetLastError(ERROR_SUCCESS);
 
-	Log("NvEnc Encoder initialized.");
+	Log("SEE Encoder initialized.");
 }
 
 Utilities::Logging::~Logging()
 {
-	Log("NvEnc Encoder is shutting down.");
+	Log("SEE Encoder is shutting down.");
 	CloseHandle(m_OutputFile);
 }
 

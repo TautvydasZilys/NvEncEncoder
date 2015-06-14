@@ -14,12 +14,6 @@
     <ClCompile Include="Core\NvEncode.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\NEE_Encoder.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\NEE_Api.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Windowing\PreviewWindowRenderer.cpp">
       <Filter>Windowing</Filter>
     </ClCompile>
@@ -28,6 +22,12 @@
     </ClCompile>
     <ClCompile Include="Windowing\WindowStorage.cpp">
       <Filter>Windowing</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\SEE_Encoder.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\SEE_API.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,12 +50,6 @@
     <ClInclude Include="Core\NvEncode.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\NEE_Encoder.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\NEE_Api.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\Event.h">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -67,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="Windowing\WindowStorage.h">
       <Filter>Windowing</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\SEE_Encoder.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\SEE_API.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ namespace Windowing
 			windowInfo.style = CS_CLASSDC | CS_HREDRAW | CS_VREDRAW;
 			windowInfo.hInstance = GetModuleHandleW(nullptr);
 			windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
-			windowInfo.lpszClassName = L"NEE_PreviewWindow";
+			windowInfo.lpszClassName = L"SEE_PreviewWindow";
 			windowInfo.cbSize = sizeof(windowInfo);
 			windowInfo.lpfnWndProc = PreviewWindowRenderer::WindowProc;
 
@@ -76,7 +76,7 @@ void PreviewWindowRenderer::CreateOSWindow()
 {
 	const DWORD kWindowStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_VISIBLE;
 
-	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(PreviewWindowRendererClass::Get()), L"NEE Preview", kWindowStyle,
+	m_Hwnd = CreateWindowExW(WS_EX_APPWINDOW, reinterpret_cast<LPWSTR>(PreviewWindowRendererClass::Get()), L"SEE Preview", kWindowStyle,
 		200, 200, m_WindowWidth, m_WindowHeight, nullptr, nullptr, GetModuleHandleW(nullptr), this);
 	Assert(m_Hwnd != nullptr);
 }

@@ -19,32 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{62AD5194-D4EF-47B0-AC49-62D72ACC4F3B}</ProjectGuid>
+    <ProjectGuid>{396D82DD-B593-4170-B331-91DAC33DECB4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>NEE</RootNamespace>
+    <RootNamespace>SEE_Encoder</RootNamespace>
+    <ProjectName>SEE_Encoder</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,22 +70,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Bin\Intermediate\NEE\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\SEE_Encoder\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Bin\Intermediate\NEE\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\SEE_Encoder\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Bin\Intermediate\NEE\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\SEE_Encoder\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\Build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)Bin\Intermediate\NEE\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Intermediate\SEE_Encoder\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -94,15 +95,21 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)NvEncEncoder\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SEE_Encoder\Include;$(SolutionDir)Bin</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>NvEncEncoder.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <HeaderFileOutput>$(SolutionDir)Bin\Shaders\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <VariableName>g_%(Filename)</VariableName>
+      <DisableOptimizations>false</DisableOptimizations>
+      <EnableDebuggingInformation>false</EnableDebuggingInformation>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -112,15 +119,25 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)NvEncEncoder\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SEE_Encoder\Include;$(SolutionDir)Bin</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalOptions>NvEncEncoder.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <VariableName>g_%(Filename)</VariableName>
+    </FxCompile>
+    <FxCompile>
+      <HeaderFileOutput>$(SolutionDir)Bin\Shaders\%(Filename).h</HeaderFileOutput>
+    </FxCompile>
+    <FxCompile>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <DisableOptimizations>false</DisableOptimizations>
+      <EnableDebuggingInformation>false</EnableDebuggingInformation>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -132,7 +149,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)NvEncEncoder\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SEE_Encoder\Include;$(SolutionDir)Bin</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -140,9 +157,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions>NvEncEncoder.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <HeaderFileOutput>$(SolutionDir)Bin\Shaders\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <VariableName>g_%(Filename)</VariableName>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -154,7 +175,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)NvEncEncoder\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SEE_Encoder\Include;$(SolutionDir)Bin</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -162,21 +183,67 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions>NvEncEncoder.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <HeaderFileOutput>$(SolutionDir)Bin\Shaders\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <VariableName>g_%(Filename)</VariableName>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Core\D3D11Context.cpp" />
+    <ClCompile Include="Core\SEE_Encoder.cpp" />
+    <ClCompile Include="Core\SEE_API.cpp" />
+    <ClCompile Include="Core\NvEncode.cpp" />
     <ClCompile Include="PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Utilities\Encoding.cpp" />
+    <ClCompile Include="Utilities\Logging.cpp" />
+    <ClCompile Include="Windowing\PreviewWindow.cpp" />
+    <ClCompile Include="Windowing\PreviewWindowRenderer.cpp" />
+    <ClCompile Include="Windowing\WindowStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\D3D11Context.h" />
+    <ClInclude Include="Core\SEE_Encoder.h" />
+    <ClInclude Include="Core\NvEncode.h" />
+    <ClInclude Include="External\nvEncodeAPI.h" />
+    <ClInclude Include="Include\SEE_API.h" />
     <ClInclude Include="PrecompiledHeader.h" />
+    <ClInclude Include="Utilities\CriticalSection.h" />
+    <ClInclude Include="Utilities\Encoding.h" />
+    <ClInclude Include="Utilities\Event.h" />
+    <ClInclude Include="Utilities\Logging.h" />
+    <ClInclude Include="Windowing\PreviewWindow.h" />
+    <ClInclude Include="Windowing\PreviewWindowRenderer.h" />
+    <ClInclude Include="Windowing\WindowStorage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Utilities\Encoding.inl" />
+    <None Include="Utilities\Logging.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\PreviewWindowPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EnableDebuggingInformation>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
+    </FxCompile>
+    <FxCompile Include="Shaders\PreviewWindowVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

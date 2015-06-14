@@ -5,7 +5,7 @@
 #include "Windowing\PreviewWindow.h"
 #include "Utilities\Logging.h"
 
-class NEE_Encoder
+class SEE_Encoder
 {
 private:
 	Utilities::Logging m_Logging;
@@ -14,7 +14,7 @@ private:
 	Windowing::PreviewWindow m_PreviewWindow;
 
 public:
-	inline NEE_Encoder(const wchar_t* logFileName, bool forceOverwriteLogFile) :
+	inline SEE_Encoder(const wchar_t* logFileName, bool forceOverwriteLogFile) :
 		m_Logging(logFileName, forceOverwriteLogFile),
 		m_D3D11(m_Logging),
 		m_NvEncode(m_Logging),
@@ -58,6 +58,6 @@ public:
 		}
 	}
 
-	inline ~NEE_Encoder() { }
+	inline ~SEE_Encoder() { }
 };
 

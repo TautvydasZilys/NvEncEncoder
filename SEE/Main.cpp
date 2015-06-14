@@ -1,5 +1,5 @@
 #include "PrecompiledHeader.h"
-#include "NEE_Api.h"
+#include "SEE_Api.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
@@ -8,11 +8,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	UNREFERENCED(pCmdLine);
 	UNREFERENCED(nCmdShow);
 
-	auto encoder = NEE_CreateEncoder(L"Encoder.log", false);
+	auto encoder = SEE_CreateEncoder(L"Encoder.log", false);
 
 	if (encoder == nullptr)
 		return -1;
 
-	NEE_DestroyEncoder(encoder);
+	SEE_DestroyEncoder(encoder);
 	return 0;
 }
