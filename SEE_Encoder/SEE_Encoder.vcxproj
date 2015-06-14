@@ -201,7 +201,7 @@
     <ClCompile Include="Core\D3D11Context.cpp" />
     <ClCompile Include="Core\SEE_Encoder.cpp" />
     <ClCompile Include="Core\SEE_API.cpp" />
-    <ClCompile Include="Core\NvEncode.cpp" />
+    <ClCompile Include="Encoding\NvEncode.cpp" />
     <ClCompile Include="PrecompiledHeader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -217,7 +217,7 @@
   <ItemGroup>
     <ClInclude Include="Core\D3D11Context.h" />
     <ClInclude Include="Core\SEE_Encoder.h" />
-    <ClInclude Include="Core\NvEncode.h" />
+    <ClInclude Include="Encoding\NvEncode.h" />
     <ClInclude Include="External\nvEncodeAPI.h" />
     <ClInclude Include="Include\SEE_API.h" />
     <ClInclude Include="PrecompiledHeader.h" />

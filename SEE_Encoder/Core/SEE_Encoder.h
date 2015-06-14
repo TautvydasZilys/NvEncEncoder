@@ -1,7 +1,7 @@
 #pragma once
 
 #include "D3D11Context.h"
-#include "NvEncode.h"
+#include "Encoding\NvEncode.h"
 #include "Windowing\PreviewWindow.h"
 #include "Utilities\Logging.h"
 

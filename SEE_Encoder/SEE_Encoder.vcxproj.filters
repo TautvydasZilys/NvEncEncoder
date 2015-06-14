@@ -11,9 +11,6 @@
     <ClCompile Include="Core\D3D11Context.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\NvEncode.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Windowing\PreviewWindowRenderer.cpp">
       <Filter>Windowing</Filter>
     </ClCompile>
@@ -28,6 +25,9 @@
     </ClCompile>
     <ClCompile Include="Core\SEE_API.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Encoding\NvEncode.cpp">
+      <Filter>Encoding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -45,9 +45,6 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Core\D3D11Context.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\NvEncode.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\Event.h">
@@ -68,6 +65,9 @@
     <ClInclude Include="Include\SEE_API.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Encoding\NvEncode.h">
+      <Filter>Encoding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -87,6 +87,9 @@
     </Filter>
     <Filter Include="Windowing">
       <UniqueIdentifier>{ee1d4b3d-a0fb-40bc-943b-dba443292e0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encoding">
+      <UniqueIdentifier>{6be74323-7d4b-4117-9a92-f47dbe6630ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
