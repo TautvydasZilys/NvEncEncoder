@@ -1,7 +1,9 @@
 #include "PrecompiledHeader.h"
 #include "Encoding.h"
 
-size_t Utilities::Encoding::Utf8ToUtf16Inline(const char* str, size_t strLength, wchar_t* destination, size_t destinationLength)
+using namespace Utilities;
+
+size_t Encoding::Utf8ToUtf16Inline(const char* str, size_t strLength, wchar_t* destination, size_t destinationLength)
 {
 	Assert(destinationLength >= strLength);
 	Assert(strLength < static_cast<size_t>(std::numeric_limits<int>::max()));
@@ -16,7 +18,7 @@ size_t Utilities::Encoding::Utf8ToUtf16Inline(const char* str, size_t strLength,
 	return length;
 }
 
-std::wstring Utilities::Encoding::Utf8ToUtf16(const char* str, size_t strLength)
+std::wstring Encoding::Utf8ToUtf16(const char* str, size_t strLength)
 {
 	if (strLength == 0)
 		return std::wstring();
@@ -37,7 +39,7 @@ std::wstring Utilities::Encoding::Utf8ToUtf16(const char* str, size_t strLength)
 	}
 }
 
-size_t Utilities::Encoding::Utf16ToUtf8Inline(const wchar_t* wstr, size_t wstrLength, char* destination, size_t destinationLength)
+size_t Encoding::Utf16ToUtf8Inline(const wchar_t* wstr, size_t wstrLength, char* destination, size_t destinationLength)
 {
 	Assert(destinationLength >= wstrLength);
 	Assert(wstrLength < static_cast<size_t>(std::numeric_limits<int>::max()));
@@ -52,7 +54,7 @@ size_t Utilities::Encoding::Utf16ToUtf8Inline(const wchar_t* wstr, size_t wstrLe
 	return length;
 }
 
-std::string Utilities::Encoding::Utf16ToUtf8(const wchar_t* wstr, size_t wstrLength)
+std::string Encoding::Utf16ToUtf8(const wchar_t* wstr, size_t wstrLength)
 {
 	if (wstrLength == 0)
 		return std::string();

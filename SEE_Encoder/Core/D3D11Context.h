@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Utilities\Com\ComPtr.h"
+
 namespace Utilities { class Logging; }
 
 class D3D11Context
 {
 private:
 	HMODULE m_D3D11Dll;
-	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;
+	Utilities::Com::ComPtr<ID3D11Device> m_Device;
+	Utilities::Com::ComPtr<ID3D11DeviceContext> m_DeviceContext;
 	D3D_FEATURE_LEVEL m_FeatureLevel;
 
 #if _DEBUG
@@ -26,7 +28,7 @@ public:
 #if _DEBUG
 		Assert(GetCurrentThreadId() == m_ThreadId);
 #endif
-		return m_Device.Get();
+		return m_Device;
 	}
 
 	inline ID3D11DeviceContext* GetDeviceContext()
@@ -34,7 +36,7 @@ public:
 #if _DEBUG
 		Assert(GetCurrentThreadId() == m_ThreadId);
 #endif
-		return m_DeviceContext.Get();
+		return m_DeviceContext;
 	}
 
 	void PrintDeviceInfo(Utilities::Logging& logging);

@@ -29,6 +29,12 @@
     <ClCompile Include="Encoding\NvEncode.cpp">
       <Filter>Encoding</Filter>
     </ClCompile>
+    <ClCompile Include="Decoding\VideoDecoder.cpp">
+      <Filter>Decoding</Filter>
+    </ClCompile>
+    <ClCompile Include="Decoding\MediaFoundationContext.cpp">
+      <Filter>Decoding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrecompiledHeader.h" />
@@ -68,6 +74,18 @@
     <ClInclude Include="Encoding\NvEncode.h">
       <Filter>Encoding</Filter>
     </ClInclude>
+    <ClInclude Include="Decoding\VideoDecoder.h">
+      <Filter>Decoding</Filter>
+    </ClInclude>
+    <ClInclude Include="Decoding\MediaFoundationContext.h">
+      <Filter>Decoding</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Com\ComClass.h">
+      <Filter>Utilities\Com</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Com\ComPtr.h">
+      <Filter>Utilities\Com</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -90,6 +108,12 @@
     </Filter>
     <Filter Include="Encoding">
       <UniqueIdentifier>{6be74323-7d4b-4117-9a92-f47dbe6630ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Decoding">
+      <UniqueIdentifier>{fd2077aa-aa20-46a5-9bdc-a7e175ecc8a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Com">
+      <UniqueIdentifier>{2c08e58a-3ebd-4479-91bd-7978d20ffe7d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

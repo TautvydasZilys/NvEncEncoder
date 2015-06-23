@@ -1,6 +1,9 @@
 #include "PrecompiledHeader.h"
 #include "D3D11Context.h"
 #include "Utilities\Logging.h"
+#include "Utilities\Com\ComPtr.h"
+
+using namespace Utilities::Com;
 
 D3D11Context::D3D11Context(Utilities::Logging& logging) :
 	m_D3D11Dll(nullptr)
@@ -62,8 +65,8 @@ D3D11Context::~D3D11Context()
 
 void D3D11Context::PrintDeviceInfo(Utilities::Logging& logging)
 {
-	Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
-	Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
+	ComPtr<IDXGIDevice> dxgiDevice;
+	ComPtr<IDXGIAdapter> dxgiAdapter;
 	DXGI_ADAPTER_DESC dxgiAdapterDesc;
 
 	auto hr = m_Device.As(&dxgiDevice);

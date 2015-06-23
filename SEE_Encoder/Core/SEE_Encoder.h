@@ -1,22 +1,26 @@
 #pragma once
 
 #include "D3D11Context.h"
+#include "Decoding\MediaFoundationContext.h"
 #include "Encoding\NvEncode.h"
-#include "Windowing\PreviewWindow.h"
 #include "Utilities\Logging.h"
+#include "Utilities\Com\ComPtr.h"
+#include "Windowing\PreviewWindow.h"
 
 class SEE_Encoder
 {
 private:
 	Utilities::Logging m_Logging;
 	D3D11Context m_D3D11;
-	NvEncode m_NvEncode;
+	Decoding::MediaFoundationContext m_MediaFoundation;
+	Encoding::NvEncode m_NvEncode;
 	Windowing::PreviewWindow m_PreviewWindow;
 
 public:
 	inline SEE_Encoder(const wchar_t* logFileName, bool forceOverwriteLogFile) :
 		m_Logging(logFileName, forceOverwriteLogFile),
 		m_D3D11(m_Logging),
+		m_MediaFoundation(m_Logging),
 		m_NvEncode(m_Logging),
 		m_PreviewWindow(m_Logging)
 	{
@@ -24,8 +28,8 @@ public:
 
 		auto d3d11Device = m_D3D11.GetDevice();
 
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> textureSRV;
+		Utilities::Com::ComPtr<ID3D11Texture2D> texture;
+		Utilities::Com::ComPtr<ID3D11ShaderResourceView> textureSRV;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroStructure(&textureDesc);
@@ -53,7 +57,7 @@ public:
 
 		while (!m_PreviewWindow.IsDestroyed())
 		{
-			m_PreviewWindow.Blit(texture.Get());
+			m_PreviewWindow.Blit(texture);
 			Sleep(2000);
 		}
 	}

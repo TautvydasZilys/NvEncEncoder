@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core\D3D11Context.h"
+#include "Utilities\Com\ComPtr.h"
 #include "Utilities\CriticalSection.h"
 #include "Utilities\Event.h"
 
@@ -12,17 +13,17 @@ namespace Windowing
 	{
 	private:
 		D3D11Context m_D3D11Context;
-		Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
-		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_BackBufferRTV;
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_InputLayout;
-		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
-		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader;
-		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState;
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11Buffer> m_ScaleBuffer;
+		Utilities::Com::ComPtr<IDXGISwapChain> m_SwapChain;
+		Utilities::Com::ComPtr<ID3D11RenderTargetView> m_BackBufferRTV;
+		Utilities::Com::ComPtr<ID3D11InputLayout> m_InputLayout;
+		Utilities::Com::ComPtr<ID3D11VertexShader> m_VertexShader;
+		Utilities::Com::ComPtr<ID3D11PixelShader> m_PixelShader;
+		Utilities::Com::ComPtr<ID3D11SamplerState> m_SamplerState;
+		Utilities::Com::ComPtr<ID3D11Buffer> m_VertexBuffer;
+		Utilities::Com::ComPtr<ID3D11Buffer> m_ScaleBuffer;
 
 		// Used only in DX11.1
-		Microsoft::WRL::ComPtr<IDXGISwapChain2> m_SwapChain2;
+		Utilities::Com::ComPtr<IDXGISwapChain2> m_SwapChain2;
 		uint16_t m_SwapChainWidth;
 		uint16_t m_SwapChainHeight;
 
@@ -31,9 +32,9 @@ namespace Windowing
 
 		uint16_t m_TextureWidth;
 		uint16_t m_TextureHeight;
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_SourceTexture;
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> m_StagingTexture;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_StagingTextureSRV;
+		Utilities::Com::ComPtr<ID3D11Texture2D> m_SourceTexture;
+		Utilities::Com::ComPtr<ID3D11Texture2D> m_StagingTexture;
+		Utilities::Com::ComPtr<ID3D11ShaderResourceView> m_StagingTextureSRV;
 
 		uint32_t m_VertexBufferStride;
 		uint32_t m_VertexBufferOffset;

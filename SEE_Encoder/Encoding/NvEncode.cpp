@@ -2,6 +2,8 @@
 #include "NvEncode.h"
 #include "Utilities\Logging.h"
 
+using namespace Encoding;
+
 NvEncode::NvEncode(Utilities::Logging& logging) :
 	m_NvEncodeApiDll(nullptr)
 {
@@ -33,9 +35,6 @@ NvEncode::NvEncode(Utilities::Logging& logging) :
 
 NvEncode::~NvEncode()
 {
-	if (m_NvEncodeApiDll != nullptr)
-	{
-		auto result = FreeLibrary(m_NvEncodeApiDll);
-		Assert(result != FALSE);
-	}
+	auto result = FreeLibrary(m_NvEncodeApiDll);
+	Assert(result != FALSE);
 }

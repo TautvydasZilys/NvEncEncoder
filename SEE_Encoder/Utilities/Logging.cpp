@@ -1,7 +1,9 @@
 #include "PrecompiledHeader.h"
 #include "Logging.h"
 
-Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
+using namespace Utilities;
+
+Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 {
 	auto openMode = forceOverwrite ? CREATE_ALWAYS : CREATE_NEW;
 
@@ -41,13 +43,13 @@ Utilities::Logging::Logging(const wchar_t* logFileName, bool forceOverwrite)
 	Log("SEE Encoder initialized.");
 }
 
-Utilities::Logging::~Logging()
+Logging::~Logging()
 {
 	Log("SEE Encoder is shutting down.");
 	CloseHandle(m_OutputFile);
 }
 
-void Utilities::Logging::OutputMessage(const char* message, size_t length)
+void Logging::OutputMessage(const char* message, size_t length)
 {
 	if (IsDebuggerPresent())
 		OutputDebugStringA(message);
@@ -59,23 +61,23 @@ void Utilities::Logging::OutputMessage(const char* message, size_t length)
 	Assert(bytesWritten == length);
 }
 
-static inline size_t SystemTimeToStringInline(wchar_t (&buffer)[Utilities::Logging::kBufferSize], SYSTEMTIME* systemTime = nullptr)
+static inline size_t SystemTimeToStringInline(wchar_t (&buffer)[Logging::kBufferSize], SYSTEMTIME* systemTime = nullptr)
 {
-	auto dateLength = GetDateFormatEx(LOCALE_NAME_SYSTEM_DEFAULT, DATE_SHORTDATE, systemTime, nullptr, buffer, Utilities::Logging::kBufferSize, nullptr);
+	auto dateLength = GetDateFormatEx(LOCALE_NAME_SYSTEM_DEFAULT, DATE_SHORTDATE, systemTime, nullptr, buffer, Logging::kBufferSize, nullptr);
 	buffer[dateLength - 1] = ' ';
-	auto timeLength = GetTimeFormatEx(LOCALE_NAME_SYSTEM_DEFAULT, 0, systemTime, nullptr, buffer + dateLength, Utilities::Logging::kBufferSize - dateLength);
+	auto timeLength = GetTimeFormatEx(LOCALE_NAME_SYSTEM_DEFAULT, 0, systemTime, nullptr, buffer + dateLength, Logging::kBufferSize - dateLength);
 
 	return dateLength + timeLength;
 }
 
-static std::wstring SystemTimeToString(SYSTEMTIME* systemTime = nullptr)
+static inline std::wstring SystemTimeToString(SYSTEMTIME* systemTime = nullptr)
 {
-	wchar_t buffer[Utilities::Logging::kBufferSize];
+	wchar_t buffer[Logging::kBufferSize];
 	SystemTimeToStringInline(buffer, systemTime);
 	return buffer;
 }
 
-void Utilities::Logging::OutputCurrentTimestamp()
+void Logging::OutputCurrentTimestamp()
 {
 	OutputMessage("[");
 
@@ -88,7 +90,7 @@ void Utilities::Logging::OutputCurrentTimestamp()
 	OutputMessage("] ");
 }
 
-void Utilities::Logging::Terminate(int errorCode)
+void Logging::Terminate(int errorCode)
 {
 	delete this;
 	__fastfail(errorCode); // Just crash™ - let user know we crashed by bringing up WER dialog

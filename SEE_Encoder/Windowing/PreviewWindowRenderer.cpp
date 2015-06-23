@@ -4,6 +4,7 @@
 #include "Shaders\PreviewWindowVertexShader.h"
 #include "WindowStorage.h"
 
+using namespace Utilities::Com;
 using namespace Windowing;
 
 namespace Windowing
@@ -83,15 +84,15 @@ void PreviewWindowRenderer::CreateOSWindow()
 
 static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, uint16_t width, uint16_t height, IDXGISwapChain*& swapChain, ID3D11RenderTargetView*& backBufferRTV)
 {
-	Microsoft::WRL::ComPtr<IDXGIDevice> dxgiDevice;
-	Microsoft::WRL::ComPtr<IDXGIAdapter> dxgiAdapter;
-	Microsoft::WRL::ComPtr<IDXGIFactory> dxgiFactory;
-	Microsoft::WRL::ComPtr<ID3D11Resource> backBuffer;
+	ComPtr<IDXGIDevice> dxgiDevice;
+	ComPtr<IDXGIAdapter> dxgiAdapter;
+	ComPtr<IDXGIFactory> dxgiFactory;
+	ComPtr<ID3D11Resource> backBuffer;
 
-	auto hr = d3d11Device->QueryInterface(dxgiDevice.ReleaseAndGetAddressOf());
+	auto hr = d3d11Device->QueryInterface<IDXGIDevice>(&dxgiDevice);
 	Assert(SUCCEEDED(hr));
 
-	hr = dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf());
+	hr = dxgiDevice->GetAdapter(&dxgiAdapter);
 	Assert(SUCCEEDED(hr));
 
 	hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), &dxgiFactory);
@@ -126,7 +127,7 @@ static inline void CreateSwapChain(HWND hwnd, ID3D11Device* d3d11Device, uint16_
 	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
 	Assert(SUCCEEDED(hr));
 
-	hr = d3d11Device->CreateRenderTargetView(backBuffer.Get(), nullptr, &backBufferRTV);
+	hr = d3d11Device->CreateRenderTargetView(backBuffer, nullptr, &backBufferRTV);
 	Assert(SUCCEEDED(hr));
 }
 
@@ -211,10 +212,10 @@ void PreviewWindowRenderer::CreateD3D11Resources()
 {
 	auto d3d11Device = m_D3D11Context.GetDevice();
 
-	CreateSwapChain(m_Hwnd, d3d11Device, m_WindowWidth, m_WindowHeight, *m_SwapChain.ReleaseAndGetAddressOf(), *m_BackBufferRTV.ReleaseAndGetAddressOf());
-	CreateShadersAndInputLayout(d3d11Device, *m_VertexShader.ReleaseAndGetAddressOf(), *m_PixelShader.ReleaseAndGetAddressOf(), *m_InputLayout.ReleaseAndGetAddressOf());
-	CreateBuffers(d3d11Device, *m_VertexBuffer.ReleaseAndGetAddressOf(), *m_ScaleBuffer.ReleaseAndGetAddressOf(), m_VertexBufferStride, m_VertexBufferOffset);
-	CreateSamplerState(d3d11Device, *m_SamplerState.ReleaseAndGetAddressOf());
+	CreateSwapChain(m_Hwnd, d3d11Device, m_WindowWidth, m_WindowHeight, m_SwapChain.GetReferenceToPtr(), m_BackBufferRTV.GetReferenceToPtr());
+	CreateShadersAndInputLayout(d3d11Device, m_VertexShader.GetReferenceToPtr(), m_PixelShader.GetReferenceToPtr(), m_InputLayout.GetReferenceToPtr());
+	CreateBuffers(d3d11Device, m_VertexBuffer.GetReferenceToPtr(), m_ScaleBuffer.GetReferenceToPtr(), m_VertexBufferStride, m_VertexBufferOffset);
+	CreateSamplerState(d3d11Device, m_SamplerState.GetReferenceToPtr());
 
 	m_SwapChain.As(&m_SwapChain2);
 	
@@ -246,7 +247,7 @@ void PreviewWindowRenderer::ResizeSwapchain()
 	}
 
 
-	Microsoft::WRL::ComPtr<ID3D11Resource> backBuffer;
+	ComPtr<ID3D11Resource> backBuffer;
 
 	m_D3D11Context.GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 	m_BackBufferRTV = nullptr;
@@ -257,7 +258,7 @@ void PreviewWindowRenderer::ResizeSwapchain()
 	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
 	Assert(SUCCEEDED(hr));
 
-	hr = m_D3D11Context.GetDevice()->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_BackBufferRTV);
+	hr = m_D3D11Context.GetDevice()->CreateRenderTargetView(backBuffer, nullptr, &m_BackBufferRTV);
 	Assert(SUCCEEDED(hr));
 }
 
@@ -284,19 +285,19 @@ void PreviewWindowRenderer::UpdateScaleBuffer()
 	D3D11_MAPPED_SUBRESOURCE subresource;
 	auto d3d11DeviceContext = m_D3D11Context.GetDeviceContext();
 
-	auto hr = d3d11DeviceContext->Map(m_ScaleBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+	auto hr = d3d11DeviceContext->Map(m_ScaleBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
 	Assert(SUCCEEDED(hr));
 
 	memcpy(subresource.pData, &scale, sizeof(scale));
 
-	d3d11DeviceContext->Unmap(m_ScaleBuffer.Get(), 0);
+	d3d11DeviceContext->Unmap(m_ScaleBuffer, 0);
 }
 
 bool PreviewWindowRenderer::RecreateStagingTexture()
 {
 	HANDLE sharedTextureHandle;
 	auto d3d11Device = m_D3D11Context.GetDevice();
-	Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+	ComPtr<ID3D11Resource> resource;
 
 	auto hr = m_LastOriginalTexture->GetSharedHandle(&sharedTextureHandle);
 	Assert(SUCCEEDED(hr));
@@ -329,7 +330,7 @@ bool PreviewWindowRenderer::RecreateStagingTexture()
 	hr = d3d11Device->CreateTexture2D(&textureDesc, nullptr, &m_StagingTexture);
 	Assert(SUCCEEDED(hr));
 
-	hr = d3d11Device->CreateShaderResourceView(m_StagingTexture.Get(), nullptr, &m_StagingTextureSRV);
+	hr = d3d11Device->CreateShaderResourceView(m_StagingTexture, nullptr, &m_StagingTextureSRV);
 	Assert(SUCCEEDED(hr));
 
 	return true;
@@ -407,7 +408,7 @@ void PreviewWindowRenderer::Render()
 			originalTexture->Release();	// Just release it. We already have a reference to it
 		}
 
-		d3d11DeviceContext->CopyResource(m_StagingTexture.Get(), m_SourceTexture.Get());
+		d3d11DeviceContext->CopyResource(m_StagingTexture, m_SourceTexture);
 	}
 
 	if (m_WindowSizeDirty || textureSizeDirty)
@@ -423,19 +424,19 @@ void PreviewWindowRenderer::Render()
 	}
 
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	d3d11DeviceContext->ClearRenderTargetView(m_BackBufferRTV.Get(), clearColor);
+	d3d11DeviceContext->ClearRenderTargetView(m_BackBufferRTV, clearColor);
 
 	if (m_StagingTexture != nullptr)
 	{
 		const D3D11_VIEWPORT viewPort = { 0.0f, 0.0f, static_cast<float>(m_WindowWidth), static_cast<float>(m_WindowHeight), 0.0f, 1.0f };
 
-		d3d11DeviceContext->IASetInputLayout(m_InputLayout.Get());
+		d3d11DeviceContext->IASetInputLayout(m_InputLayout);
 		d3d11DeviceContext->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &m_VertexBufferStride, &m_VertexBufferOffset);
 		d3d11DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		d3d11DeviceContext->VSSetConstantBuffers(0, 1, m_ScaleBuffer.GetAddressOf());
-		d3d11DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+		d3d11DeviceContext->VSSetShader(m_VertexShader, nullptr, 0);
 		d3d11DeviceContext->RSSetViewports(1, &viewPort);
-		d3d11DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+		d3d11DeviceContext->PSSetShader(m_PixelShader, nullptr, 0);
 		d3d11DeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
 		d3d11DeviceContext->PSSetShaderResources(0, 1, m_StagingTextureSRV.GetAddressOf());
 		d3d11DeviceContext->OMSetRenderTargets(1, m_BackBufferRTV.GetAddressOf(), nullptr);

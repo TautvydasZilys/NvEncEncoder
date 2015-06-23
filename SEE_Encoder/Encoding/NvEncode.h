@@ -2,16 +2,18 @@
 
 namespace Utilities { class Logging; }
 
-class NvEncode
+namespace Encoding
 {
-private:
-	HMODULE m_NvEncodeApiDll;
-	NV_ENCODE_API_FUNCTION_LIST m_NvEncode;
+	class NvEncode
+	{
+	private:
+		HMODULE m_NvEncodeApiDll;
+		NV_ENCODE_API_FUNCTION_LIST m_NvEncode;
 
-public:
-	NvEncode(Utilities::Logging& logging);
-	~NvEncode();
+	public:
+		NvEncode(Utilities::Logging& logging);
+		~NvEncode();
 
-	inline const NV_ENCODE_API_FUNCTION_LIST* operator->() const { return &m_NvEncode; }
-};
-
+		inline const NV_ENCODE_API_FUNCTION_LIST* operator->() const { return &m_NvEncode; }
+	};
+}
